@@ -1,10 +1,203 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+
+interface StatsData {
+  totalConversations: number
+  hadResultsRate: number
+  topQuery: string
+  topCountry: string
+}
+
+interface ChartPoint {
+  date: string
+  count: number
+}
+
+const StatCard = ({ label, value, sub }: { label: string; value: string; sub?: string }) => (
+  <div style={{
+    background: '#1A1A1A',
+    border: '1px solid #2A2A2A',
+    borderRadius: 10,
+    padding: '20px 24px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+  }}>
+    <span style={{ fontSize: 12, color: '#707070', letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</span>
+    <span style={{ fontSize: 28, fontWeight: 600, color: '#F1F1F1', letterSpacing: '-0.5px', lineHeight: 1 }}>{value}</span>
+    {sub && <span style={{ fontSize: 12, color: '#707070' }}>{sub}</span>}
+  </div>
+)
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 6, padding: '8px 12px' }}>
+        <p style={{ color: '#707070', fontSize: 12, marginBottom: 4 }}>{label}</p>
+        <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>{payload[0].value} conversations</p>
+      </div>
+    )
+  }
+  return null
+}
+
 export default function OverviewPage() {
+  const [stats, setStats] = useState<StatsData | null>(null)
+  const [chartData, setChartData] = useState<ChartPoint[]>([])
+  const [loading, setLoading] = useState(true)
+  const [range, setRange] = useState<7 | 30>(30)
+
+  useEffect(() => {
+    fetchData()
+  }, [range])
+
+  async function fetchData() {
+    setLoading(true)
+
+    const since = new Date()
+    since.setDate(since.getDate() - range)
+    const sinceIso = since.toISOString()
+
+    // Fetch all conversations in range
+    const { data: convs } = await supabase
+      .from('conversations')
+      .select('id, visitor_query, had_results, country, created_at')
+      .gte('created_at', sinceIso)
+      .order('created_at', { ascending: true })
+
+    if (!convs) { setLoading(false); return }
+
+    // Stats
+    const total = convs.length
+    const hadResults = convs.filter(c => c.had_results).length
+    const rate = total > 0 ? Math.round((hadResults / total) * 100) : 0
+
+    // Top query
+    const queryCounts: Record<string, number> = {}
+    convs.forEach(c => {
+      if (c.visitor_query) {
+        const q = c.visitor_query.toLowerCase().trim()
+        queryCounts[q] = (queryCounts[q] || 0) + 1
+      }
+    })
+    const topQuery = Object.entries(queryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—'
+
+    // Top country
+    const countryCounts: Record<string, number> = {}
+    convs.forEach(c => {
+      if (c.country) countryCounts[c.country] = (countryCounts[c.country] || 0) + 1
+    })
+    const topCountry = Object.entries(countryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—'
+
+    setStats({ totalConversations: total, hadResultsRate: rate, topQuery, topCountry })
+
+    // Chart data — group by day
+    const dayMap: Record<string, number> = {}
+    const days = range
+    for (let i = 0; i < days; i++) {
+      const d = new Date()
+      d.setDate(d.getDate() - (days - 1 - i))
+      const key = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+      dayMap[key] = 0
+    }
+    convs.forEach(c => {
+      const key = new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+      if (dayMap[key] !== undefined) dayMap[key]++
+    })
+    setChartData(Object.entries(dayMap).map(([date, count]) => ({ date, count })))
+
+    setLoading(false)
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-      <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>
-        Overview
-      </h1>
-      <p style={{ color: '#707070', fontSize: 14 }}>Coming soon.</p>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Overview</h1>
+        <div style={{ display: 'flex', gap: 4, background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
+          {([7, 30] as const).map(r => (
+            <button
+              key={r}
+              onClick={() => setRange(r)}
+              style={{
+                padding: '5px 14px',
+                borderRadius: 6,
+                fontSize: 13,
+                fontWeight: 500,
+                border: 'none',
+                cursor: 'pointer',
+                background: range === r ? '#2A2A2A' : 'transparent',
+                color: range === r ? '#F1F1F1' : '#707070',
+                transition: 'all 0.1s',
+              }}
+            >
+              {r}d
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Stat cards */}
+      {loading ? (
+        <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+            <StatCard label="Conversations" value={stats?.totalConversations.toLocaleString() ?? '0'} sub={`Last ${range} days`} />
+            <StatCard label="Results found" value={`${stats?.hadResultsRate ?? 0}%`} sub="Had matching content" />
+            <StatCard label="Top query" value={stats?.topQuery ?? '—'} />
+            <StatCard label="Top country" value={stats?.topCountry ?? '—'} />
+          </div>
+
+          {/* Chart */}
+          <div style={{
+            background: '#1A1A1A',
+            border: '1px solid #2A2A2A',
+            borderRadius: 10,
+            padding: '24px 24px 16px',
+          }}>
+            <p style={{ fontSize: 13, color: '#707070', marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+              Conversation volume
+            </p>
+            {chartData.length === 0 || chartData.every(d => d.count === 0) ? (
+              <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#707070', fontSize: 14 }}>
+                No conversations yet in this period.
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
+                  <CartesianGrid stroke="#2A2A2A" vertical={false} />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fill: '#707070', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                    interval={range === 7 ? 0 : 4}
+                  />
+                  <YAxis
+                    tick={{ fill: '#707070', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                    allowDecimals={false}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#4ade80"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4, fill: '#4ade80', strokeWidth: 0 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }
