@@ -46,15 +46,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export default function OverviewPage() {
-  const { selectedSite } = useSite()
+  const { selectedSite, loading: siteLoading } = useSite()
   const [stats, setStats] = useState<StatsData | null>(null)
   const [chartData, setChartData] = useState<ChartPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [range, setRange] = useState<7 | 30>(30)
 
   useEffect(() => {
-    if (selectedSite) fetchData()
-  }, [range, selectedSite])
+    if (selectedSite) {
+      fetchData()
+    } else if (!siteLoading) {
+      setLoading(false)
+    }
+  }, [range, selectedSite, siteLoading])
 
   async function fetchData() {
     if (!selectedSite) return
@@ -147,6 +151,14 @@ export default function OverviewPage() {
       {/* Stat cards */}
       {loading ? (
         <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
+      ) : !selectedSite ? (
+        <div style={{
+          background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10,
+          padding: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+        }}>
+          <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>No sites connected yet.</p>
+          <p style={{ color: '#707070', fontSize: 13 }}>Install the Optic plugin in Framer to get started.</p>
+        </div>
       ) : (
         <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>

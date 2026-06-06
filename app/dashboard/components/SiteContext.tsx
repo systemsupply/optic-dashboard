@@ -32,18 +32,25 @@ export function SiteProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function fetchSites() {
-      const { data } = await supabase
-        .from('sites')
-        .select('id, name, created_at')
-        .order('created_at', { ascending: true })
+      try {
+        const { data, error } = await supabase
+          .from('sites')
+          .select('id, name, created_at')
+          .order('created_at', { ascending: true })
 
-      if (data && data.length > 0) {
-        setSites(data)
-        const stored = localStorage.getItem('optic_selected_site')
-        const validStored = stored && data.find(s => s.id === stored)
-        setSelectedSiteIdState(validStored ? stored : data[0].id)
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          setSites(data)
+          const stored = localStorage.getItem('optic_selected_site')
+          const validStored = stored && data.find(s => s.id === stored)
+          setSelectedSiteIdState(validStored ? stored : data[0].id)
+        }
+      } catch (err) {
+        console.error('Failed to fetch sites:', err)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
