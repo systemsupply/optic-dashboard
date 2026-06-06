@@ -3,58 +3,176 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useSite, Site } from '../components/SiteContext'
+
+const PLAN_LIMITS: Record<string, number> = { starter: 1, pro: 5, agency: Infinity }
+const PLAN_LABELS: Record<string, string> = { starter: 'Starter', pro: 'Pro', agency: 'Agency' }
+const PLAN_PRICES: Record<string, string> = { starter: '$19/mo', pro: '$49/mo', agency: '$99/mo' }
+
+function daysLeft(iso: string) {
+  const diff = new Date(iso).getTime() - Date.now()
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+}
+
+function getSiteName(site: Site, index: number) {
+  return site.name ?? `Site ${index + 1}`
+}
 
 export default function SettingsPage() {
   const router = useRouter()
+  const { sites, selectedSite, setSelectedSiteId } = useSite()
   const [email, setEmail] = useState<string | null>(null)
+  const [plan, setPlan] = useState<string>('starter')
+  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [deleted, setDeleted] = useState(false)
+  const [editingName, setEditingName] = useState(false)
+  const [nameInput, setNameInput] = useState('')
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setEmail(data.user?.email ?? null)
     })
+    supabase
+      .from('clients')
+      .select('plan, trial_ends_at')
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setPlan(data.plan ?? 'starter')
+          setTrialEndsAt(data.trial_ends_at ?? null)
+        }
+      })
   }, [])
+
+  useEffect(() => {
+    if (selectedSite) setNameInput(selectedSite.name ?? '')
+  }, [selectedSite])
 
   async function signOut() {
     await supabase.auth.signOut()
     router.push('/auth')
   }
 
+  async function saveSiteName() {
+    if (!selectedSite) return
+    await supabase.from('sites').update({ name: nameInput || null }).eq('id', selectedSite.id)
+    setEditingName(false)
+    window.location.reload()
+  }
+
   async function deleteConversations() {
+    if (!selectedSite) return
+    const idx = sites.findIndex(s => s.id === selectedSite.id)
     const confirmed = confirm(
-      'This will permanently delete all conversation data for your site. This cannot be undone. Continue?'
+      `This will permanently delete all conversation data for "${getSiteName(selectedSite, idx)}". This cannot be undone. Continue?`
     )
     if (!confirmed) return
-
     setDeleting(true)
-
-    // Get the current user's site_id via clients table
-    const { data: userData } = await supabase.auth.getUser()
-    const userId = userData.user?.id
-    if (!userId) { setDeleting(false); return }
-
-    const { data: client } = await supabase
-      .from('clients')
-      .select('site_id')
-      .eq('user_id', userId)
-      .single()
-
-    if (client?.site_id) {
-      await supabase
-        .from('conversations')
-        .delete()
-        .eq('site_id', client.site_id)
-    }
-
+    await supabase.from('conversations').delete().eq('site_id', selectedSite.id)
     setDeleting(false)
     setDeleted(true)
     setTimeout(() => setDeleted(false), 3000)
   }
 
+  const limit = PLAN_LIMITS[plan] ?? 1
+  const trialDays = trialEndsAt ? daysLeft(trialEndsAt) : null
+  const inTrial = trialDays !== null && trialDays > 0
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Settings</h1>
+
+      {/* Plan */}
+      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>Plan</p>
+        </div>
+        <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #2A2A2A' }}>
+          <div>
+            <p style={{ fontSize: 12, color: '#707070', marginBottom: 3 }}>Current plan</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <p style={{ fontSize: 13, color: '#F1F1F1', fontWeight: 500 }}>{PLAN_LABELS[plan] ?? plan} — {PLAN_PRICES[plan] ?? ''}</p>
+              {inTrial && (
+                <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#1E3A2A', color: '#4ade80', fontWeight: 500 }}>
+                  Trial — {trialDays}d left
+                </span>
+              )}
+            </div>
+          </div>
+          <a
+            href="https://app.optic.sh/upgrade"
+            style={{
+              padding: '7px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+              border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0',
+              textDecoration: 'none',
+            }}
+          >
+            Upgrade
+          </a>
+        </div>
+        <div style={{ padding: '16px 20px' }}>
+          <p style={{ fontSize: 12, color: '#707070', marginBottom: 3 }}>Sites</p>
+          <p style={{ fontSize: 13, color: '#F1F1F1' }}>
+            {sites.length} of {limit === Infinity ? 'unlimited' : limit} site{limit === 1 ? '' : 's'} used
+          </p>
+        </div>
+      </div>
+
+      {/* Sites */}
+      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>Sites</p>
+        </div>
+        {sites.map((site, i) => (
+          <div key={site.id} style={{
+            padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            borderBottom: i < sites.length - 1 ? '1px solid #2A2A2A' : 'none',
+            background: site.id === selectedSite?.id ? '#1E1E1E' : 'transparent',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: site.id === selectedSite?.id ? '#4ade80' : '#414141', flexShrink: 0 }} />
+              {editingName && site.id === selectedSite?.id ? (
+                <input
+                  value={nameInput}
+                  onChange={e => setNameInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') saveSiteName() }}
+                  autoFocus
+                  placeholder={`Site ${i + 1}`}
+                  style={{
+                    fontSize: 13, color: '#F1F1F1', background: '#111111',
+                    border: '1px solid #414141', borderRadius: 4, padding: '3px 8px', outline: 'none', flex: 1,
+                  }}
+                />
+              ) : (
+                <span style={{ fontSize: 13, color: '#F1F1F1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {getSiteName(site, i)}
+                </span>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexShrink: 0, marginLeft: 12 }}>
+              {site.id !== selectedSite?.id && (
+                <button
+                  onClick={() => setSelectedSiteId(site.id)}
+                  style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer' }}
+                >
+                  Select
+                </button>
+              )}
+              {site.id === selectedSite?.id && (
+                editingName ? (
+                  <>
+                    <button onClick={saveSiteName} style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #4ade80', background: 'transparent', color: '#4ade80', cursor: 'pointer' }}>Save</button>
+                    <button onClick={() => setEditingName(false)} style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #2A2A2A', background: 'transparent', color: '#707070', cursor: 'pointer' }}>Cancel</button>
+                  </>
+                ) : (
+                  <button onClick={() => setEditingName(true)} style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer' }}>Rename</button>
+                )
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Account */}
       <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
@@ -68,15 +186,12 @@ export default function SettingsPage() {
           </div>
         </div>
         <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <p style={{ fontSize: 13, color: '#A0A0A0' }}>Sign out of your account.</p>
-          </div>
+          <p style={{ fontSize: 13, color: '#A0A0A0' }}>Sign out of your account.</p>
           <button
             onClick={signOut}
             style={{
               padding: '7px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
-              border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0',
-              cursor: 'pointer',
+              border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer',
             }}
           >
             Sign out
@@ -92,7 +207,7 @@ export default function SettingsPage() {
         <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <p style={{ fontSize: 13, color: '#F1F1F1', marginBottom: 3 }}>Delete all conversation data</p>
-            <p style={{ fontSize: 12, color: '#707070' }}>Permanently removes all conversations logged for your site.</p>
+            <p style={{ fontSize: 12, color: '#707070' }}>Permanently removes all conversations for the selected site.</p>
           </div>
           <button
             onClick={deleteConversations}

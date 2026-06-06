@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useSite } from '../components/SiteContext'
 
 interface DeadEnd {
   query: string
@@ -19,13 +20,15 @@ function timeAgo(iso: string) {
 }
 
 export default function DeadEndsPage() {
+  const { selectedSite } = useSite()
   const [rows, setRows] = useState<DeadEnd[]>([])
   const [loading, setLoading] = useState(true)
   const [range, setRange] = useState<7 | 30>(30)
 
-  useEffect(() => { fetchData() }, [range])
+  useEffect(() => { if (selectedSite) fetchData() }, [range, selectedSite])
 
   async function fetchData() {
+    if (!selectedSite) return
     setLoading(true)
 
     const since = new Date()
@@ -34,6 +37,7 @@ export default function DeadEndsPage() {
     const { data } = await supabase
       .from('conversations')
       .select('visitor_query, created_at')
+      .eq('site_id', selectedSite.id)
       .eq('had_results', false)
       .gte('created_at', since.toISOString())
       .not('visitor_query', 'is', null)

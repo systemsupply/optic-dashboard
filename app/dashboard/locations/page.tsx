@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useSite } from '../components/SiteContext'
 import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps'
 
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
@@ -19,15 +20,18 @@ interface CountryStat {
 }
 
 export default function LocationsPage() {
+  const { selectedSite } = useSite()
   const [markers, setMarkers] = useState<{ lat: number; lng: number; city: string | null; country: string | null }[]>([])
   const [countries, setCountries] = useState<CountryStat[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!selectedSite) return
     async function fetch() {
       const { data } = await supabase
         .from('conversations')
         .select('country, city, latitude, longitude')
+        .eq('site_id', selectedSite!.id)
         .not('latitude', 'is', null)
         .not('longitude', 'is', null)
 
@@ -53,7 +57,7 @@ export default function LocationsPage() {
       setLoading(false)
     }
     fetch()
-  }, [])
+  }, [selectedSite])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

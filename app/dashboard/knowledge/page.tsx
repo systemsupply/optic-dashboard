@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useSite } from '../components/SiteContext'
 
 interface KnowledgeEntry {
   id: string
@@ -37,17 +38,20 @@ function TypeBadge({ type }: { type: string | null }) {
 }
 
 export default function KnowledgePage() {
+  const { selectedSite } = useSite()
   const [entries, setEntries] = useState<KnowledgeEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => { fetchEntries() }, [])
+  useEffect(() => { if (selectedSite) fetchEntries() }, [selectedSite])
 
   async function fetchEntries() {
+    if (!selectedSite) return
     setLoading(true)
     const { data } = await supabase
       .from('knowledge_entries')
       .select('id, title, content, type, created_at')
+      .eq('site_id', selectedSite.id)
       .order('created_at', { ascending: false })
     setEntries(data ?? [])
     setLoading(false)

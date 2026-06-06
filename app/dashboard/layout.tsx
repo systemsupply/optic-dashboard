@@ -1,4 +1,5 @@
 import Sidebar from '@/components/Sidebar'
+import { SiteProvider } from './components/SiteContext'
 
 export default function DashboardLayout({
   children,
@@ -6,11 +7,13 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#111111' }}>
-      <Sidebar />
-      <main style={{ flex: 1, padding: '40px 48px', overflowY: 'auto' }}>
-        {children}
-      </main>
-    </div>
+    <SiteProvider>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#111111' }}>
+        <Sidebar />
+        <main style={{ flex: 1, padding: '40px 48px', overflowY: 'auto' }}>
+          {children}
+        </main>
+      </div>
+    </SiteProvider>
   )
 }

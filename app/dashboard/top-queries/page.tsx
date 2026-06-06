@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useSite } from '../components/SiteContext'
 
 interface QueryStat {
   query: string
@@ -11,13 +12,15 @@ interface QueryStat {
 }
 
 export default function TopQueriesPage() {
+  const { selectedSite } = useSite()
   const [rows, setRows] = useState<QueryStat[]>([])
   const [loading, setLoading] = useState(true)
   const [range, setRange] = useState<7 | 30>(30)
 
-  useEffect(() => { fetchData() }, [range])
+  useEffect(() => { if (selectedSite) fetchData() }, [range, selectedSite])
 
   async function fetchData() {
+    if (!selectedSite) return
     setLoading(true)
 
     const since = new Date()
@@ -26,6 +29,7 @@ export default function TopQueriesPage() {
     const { data } = await supabase
       .from('conversations')
       .select('visitor_query, had_results')
+      .eq('site_id', selectedSite.id)
       .gte('created_at', since.toISOString())
       .not('visitor_query', 'is', null)
 

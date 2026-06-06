@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useSite } from './components/SiteContext'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
 interface StatsData {
@@ -45,26 +46,29 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export default function OverviewPage() {
+  const { selectedSite } = useSite()
   const [stats, setStats] = useState<StatsData | null>(null)
   const [chartData, setChartData] = useState<ChartPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [range, setRange] = useState<7 | 30>(30)
 
   useEffect(() => {
-    fetchData()
-  }, [range])
+    if (selectedSite) fetchData()
+  }, [range, selectedSite])
 
   async function fetchData() {
+    if (!selectedSite) return
     setLoading(true)
 
     const since = new Date()
     since.setDate(since.getDate() - range)
     const sinceIso = since.toISOString()
 
-    // Fetch all conversations in range
+    // Fetch all conversations in range for selected site
     const { data: convs } = await supabase
       .from('conversations')
       .select('id, visitor_query, had_results, country, created_at')
+      .eq('site_id', selectedSite.id)
       .gte('created_at', sinceIso)
       .order('created_at', { ascending: true })
 

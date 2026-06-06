@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useSite } from '../components/SiteContext'
 
 interface Conversation {
   id: string
@@ -22,6 +23,7 @@ function timeAgo(iso: string) {
 }
 
 export default function ConversationsPage() {
+  const { selectedSite } = useSite()
   const [rows, setRows] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(0)
@@ -29,14 +31,16 @@ export default function ConversationsPage() {
   const [filter, setFilter] = useState<'all' | 'found' | 'none'>('all')
   const PAGE_SIZE = 25
 
-  useEffect(() => { setPage(0) }, [filter])
-  useEffect(() => { fetchRows() }, [page, filter])
+  useEffect(() => { setPage(0) }, [filter, selectedSite])
+  useEffect(() => { if (selectedSite) fetchRows() }, [page, filter, selectedSite])
 
   async function fetchRows() {
+    if (!selectedSite) return
     setLoading(true)
     let query = supabase
       .from('conversations')
       .select('id, visitor_query, had_results, country, city, created_at', { count: 'exact' })
+      .eq('site_id', selectedSite.id)
       .order('created_at', { ascending: false })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
 
