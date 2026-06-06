@@ -76,6 +76,8 @@ export function SiteProvider({ children }: { children: ReactNode }) {
 
   const selectedSite = sites.find(s => s.id === selectedSiteId) ?? null
 
+  const refreshSites = fetchSites
+
   return (
     <SiteContext.Provider value={{ sites, selectedSite, setSelectedSiteId, loading, refreshSites }}>
       {children}
