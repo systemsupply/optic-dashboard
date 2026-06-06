@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export interface Site {
@@ -27,6 +28,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   const [sites, setSites] = useState<Site[]>([])
   const [selectedSiteId, setSelectedSiteIdState] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     async function fetchSites() {
@@ -44,21 +46,16 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     }
 
-    // Wait for auth session before fetching
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         fetchSites()
       } else {
-        // Listen for session to become available
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-          if (session) {
-            fetchSites()
-            subscription.unsubscribe()
-          }
-        })
+        // No session — redirect to auth
+        setLoading(false)
+        router.push('/auth')
       }
     })
-  }, [])
+  }, [router])
 
   function setSelectedSiteId(id: string) {
     setSelectedSiteIdState(id)
