@@ -20,7 +20,7 @@ function getSiteName(site: Site, index: number) {
 
 export default function SettingsPage() {
   const router = useRouter()
-  const { sites, selectedSite, setSelectedSiteId } = useSite()
+  const { sites, selectedSite, setSelectedSiteId, refreshSites } = useSite()
   const [email, setEmail] = useState<string | null>(null)
   const [plan, setPlan] = useState<string>('starter')
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
@@ -28,6 +28,7 @@ export default function SettingsPage() {
   const [deleted, setDeleted] = useState(false)
   const [editingName, setEditingName] = useState(false)
   const [nameInput, setNameInput] = useState('')
+  const [deletingSiteId, setDeletingSiteId] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -73,6 +74,23 @@ export default function SettingsPage() {
     setDeleting(false)
     setDeleted(true)
     setTimeout(() => setDeleted(false), 3000)
+  }
+
+  async function deleteSite(site: Site, idx: number) {
+    const confirmed = confirm(
+      `Remove "${getSiteName(site, idx)}"? This will permanently delete all its conversation data. This cannot be undone.`
+    )
+    if (!confirmed) return
+    setDeletingSiteId(site.id)
+    await supabase.from('conversations').delete().eq('site_id', site.id)
+    await supabase.from('knowledge_entries').delete().eq('site_id', site.id)
+    await supabase.from('sites').delete().eq('id', site.id)
+    if (selectedSite?.id === site.id) {
+      const remaining = sites.filter(s => s.id !== site.id)
+      if (remaining.length > 0) setSelectedSiteId(remaining[0].id)
+    }
+    setDeletingSiteId(null)
+    await refreshSites()
   }
 
   const limit = PLAN_LIMITS[plan] ?? 1
@@ -152,12 +170,21 @@ export default function SettingsPage() {
             </div>
             <div style={{ display: 'flex', gap: 8, flexShrink: 0, marginLeft: 12 }}>
               {site.id !== selectedSite?.id && (
-                <button
-                  onClick={() => setSelectedSiteId(site.id)}
-                  style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer' }}
-                >
-                  Select
-                </button>
+                <>
+                  <button
+                    onClick={() => setSelectedSiteId(site.id)}
+                    style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer' }}
+                  >
+                    Select
+                  </button>
+                  <button
+                    onClick={() => deleteSite(site, i)}
+                    disabled={deletingSiteId === site.id}
+                    style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #3A1A1A', background: 'transparent', color: '#E75C5C', cursor: 'pointer' }}
+                  >
+                    {deletingSiteId === site.id ? 'Removing…' : 'Remove'}
+                  </button>
+                </>
               )}
               {site.id === selectedSite?.id && (
                 editingName ? (
@@ -166,7 +193,16 @@ export default function SettingsPage() {
                     <button onClick={() => setEditingName(false)} style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #2A2A2A', background: 'transparent', color: '#707070', cursor: 'pointer' }}>Cancel</button>
                   </>
                 ) : (
-                  <button onClick={() => setEditingName(true)} style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer' }}>Rename</button>
+                  <>
+                    <button onClick={() => setEditingName(true)} style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer' }}>Rename</button>
+                    <button
+                      onClick={() => deleteSite(site, i)}
+                      disabled={deletingSiteId === site.id}
+                      style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, border: '1px solid #3A1A1A', background: 'transparent', color: '#E75C5C', cursor: 'pointer' }}
+                    >
+                      {deletingSiteId === site.id ? 'Removing…' : 'Remove'}
+                    </button>
+                  </>
                 )
               )}
             </div>
