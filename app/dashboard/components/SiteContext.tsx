@@ -37,14 +37,27 @@ export function SiteProvider({ children }: { children: ReactNode }) {
 
       if (data && data.length > 0) {
         setSites(data)
-        // Restore last selected site from localStorage, fallback to first
         const stored = localStorage.getItem('optic_selected_site')
         const validStored = stored && data.find(s => s.id === stored)
         setSelectedSiteIdState(validStored ? stored : data[0].id)
       }
       setLoading(false)
     }
-    fetchSites()
+
+    // Wait for auth session before fetching
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        fetchSites()
+      } else {
+        // Listen for session to become available
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+          if (session) {
+            fetchSites()
+            subscription.unsubscribe()
+          }
+        })
+      }
+    })
   }, [])
 
   function setSelectedSiteId(id: string) {
