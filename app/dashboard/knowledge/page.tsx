@@ -80,7 +80,7 @@ export default function KnowledgePage() {
         <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
       ) : entries.length === 0 ? (
         <div style={{
-          background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10,
+          background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10,
           padding: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
         }}>
           <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>No knowledge entries yet.</p>
@@ -90,7 +90,7 @@ export default function KnowledgePage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {entries.map(entry => (
             <div key={entry.id} style={{
-              background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10,
+              background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10,
               padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: 16,
             }}>
               <div style={{ flex: 1, minWidth: 0 }}>

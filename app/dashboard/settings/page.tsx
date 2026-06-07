@@ -118,7 +118,7 @@ export default function SettingsPage() {
       <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Settings</h1>
 
       {/* Plan */}
-      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Plan</p>
         </div>
@@ -154,7 +154,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Sites */}
-      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Sites</p>
         </div>
@@ -227,7 +227,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Account */}
-      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Account</p>
         </div>
@@ -252,7 +252,7 @@ export default function SettingsPage() {
       </div>
 
       {/* AI Discoverability */}
-      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>AI Discoverability</p>
         </div>
@@ -287,7 +287,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger zone */}
-      <div style={{ background: '#1A1A1A', border: '1px solid #3A1A1A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#171717', border: '1px solid #3A1A1A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #3A1A1A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#E75C5C' }}>Danger zone</p>
         </div>

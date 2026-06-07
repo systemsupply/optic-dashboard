@@ -68,7 +68,7 @@ export default function LocationsPage() {
       ) : (
         <>
           {/* World map */}
-          <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden', padding: '8px 0 0' }}>
+          <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden', padding: '8px 0 0' }}>
             <p style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0 20px 12px' }}>
               Visitor locations
             </p>
@@ -108,7 +108,7 @@ export default function LocationsPage() {
 
           {/* Country breakdown */}
           {countries.length > 0 && (
-            <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
                 <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Country</span>
                 <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Conversations</span>

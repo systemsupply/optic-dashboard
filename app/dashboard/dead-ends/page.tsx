@@ -71,7 +71,7 @@ export default function DeadEndsPage() {
           <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Dead Ends</h1>
           <p style={{ fontSize: 13, color: '#707070' }}>Queries where Optic found no matching content.</p>
         </div>
-        <div style={{ display: 'flex', gap: 4, background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
+        <div style={{ display: 'flex', gap: 4, background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
           {([7, 30] as const).map(r => (
             <button key={r} onClick={() => setRange(r)} style={{
               padding: '5px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500,
@@ -83,7 +83,7 @@ export default function DeadEndsPage() {
         </div>
       </div>
 
-      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 120px', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
           {['Query', 'Times', 'Last seen'].map(h => (
             <span key={h} style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: h !== 'Query' ? 'right' : 'left' }}>{h}</span>

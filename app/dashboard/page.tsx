@@ -19,7 +19,7 @@ interface ChartPoint {
 
 const StatCard = ({ label, value, sub }: { label: string; value: string; sub?: string }) => (
   <div style={{
-    background: '#1A1A1A',
+    background: '#171717',
     border: '1px solid #2A2A2A',
     borderRadius: 10,
     padding: '20px 24px',
@@ -36,7 +36,7 @@ const StatCard = ({ label, value, sub }: { label: string; value: string; sub?: s
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 6, padding: '8px 12px' }}>
+      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 6, padding: '8px 12px' }}>
         <p style={{ color: '#707070', fontSize: 12, marginBottom: 4 }}>{label}</p>
         <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>{payload[0].value} conversations</p>
       </div>
@@ -125,7 +125,7 @@ export default function OverviewPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Overview</h1>
-        <div style={{ display: 'flex', gap: 4, background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
+        <div style={{ display: 'flex', gap: 4, background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
           {([7, 30] as const).map(r => (
             <button
               key={r}
@@ -153,7 +153,7 @@ export default function OverviewPage() {
         <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
       ) : !selectedSite ? (
         <div style={{
-          background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10,
+          background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10,
           padding: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
           <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>No sites connected yet.</p>
@@ -170,7 +170,7 @@ export default function OverviewPage() {
 
           {/* Chart */}
           <div style={{
-            background: '#1A1A1A',
+            background: '#171717',
             border: '1px solid #2A2A2A',
             borderRadius: 10,
             padding: '24px 24px 16px',
