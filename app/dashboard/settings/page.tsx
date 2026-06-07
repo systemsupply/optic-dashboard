@@ -120,13 +120,13 @@ export default function SettingsPage() {
       {/* Plan */}
       <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>Plan</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Plan</p>
         </div>
         <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #2A2A2A' }}>
           <div>
             <p style={{ fontSize: 12, color: '#707070', marginBottom: 3 }}>Current plan</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <p style={{ fontSize: 13, color: '#F1F1F1', fontWeight: 500 }}>{PLAN_LABELS[plan] ?? plan} — {PLAN_PRICES[plan] ?? ''}</p>
+              <p style={{ fontSize: 14, color: '#F1F1F1', fontWeight: 500 }}>{PLAN_LABELS[plan] ?? plan} — {PLAN_PRICES[plan] ?? ''}</p>
               {inTrial && (
                 <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#1E3A2A', color: '#4ade80', fontWeight: 500 }}>
                   Trial — {trialDays}d left
@@ -137,7 +137,7 @@ export default function SettingsPage() {
           <a
             href="https://app.optic.sh/upgrade"
             style={{
-              padding: '7px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+              padding: '7px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500,
               border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0',
               textDecoration: 'none',
             }}
@@ -147,7 +147,7 @@ export default function SettingsPage() {
         </div>
         <div style={{ padding: '16px 20px' }}>
           <p style={{ fontSize: 12, color: '#707070', marginBottom: 3 }}>Sites</p>
-          <p style={{ fontSize: 13, color: '#F1F1F1' }}>
+          <p style={{ fontSize: 14, color: '#F1F1F1' }}>
             {sites.length} of {limit === Infinity ? 'unlimited' : limit} site{limit === 1 ? '' : 's'} used
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
       {/* Sites */}
       <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>Sites</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Sites</p>
         </div>
         {sites.map((site, i) => (
           <div key={site.id} style={{
@@ -174,12 +174,12 @@ export default function SettingsPage() {
                   autoFocus
                   placeholder={`Site ${i + 1}`}
                   style={{
-                    fontSize: 13, color: '#F1F1F1', background: '#111111',
+                    fontSize: 14, color: '#F1F1F1', background: '#111111',
                     border: '1px solid #414141', borderRadius: 4, padding: '3px 8px', outline: 'none', flex: 1,
                   }}
                 />
               ) : (
-                <span style={{ fontSize: 13, color: '#F1F1F1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 14, color: '#F1F1F1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {getSiteName(site, i)}
                 </span>
               )}
@@ -229,20 +229,20 @@ export default function SettingsPage() {
       {/* Account */}
       <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>Account</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Account</p>
         </div>
         <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #2A2A2A' }}>
           <div>
             <p style={{ fontSize: 12, color: '#707070', marginBottom: 3 }}>Email</p>
-            <p style={{ fontSize: 13, color: '#F1F1F1' }}>{email ?? '—'}</p>
+            <p style={{ fontSize: 14, color: '#F1F1F1' }}>{email ?? '—'}</p>
           </div>
         </div>
         <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <p style={{ fontSize: 13, color: '#A0A0A0' }}>Sign out of your account.</p>
+          <p style={{ fontSize: 14, color: '#A0A0A0' }}>Sign out of your account.</p>
           <button
             onClick={signOut}
             style={{
-              padding: '7px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+              padding: '7px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500,
               border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer',
             }}
           >
@@ -254,10 +254,10 @@ export default function SettingsPage() {
       {/* AI Discoverability */}
       <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>AI Discoverability</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>AI Discoverability</p>
         </div>
         <div style={{ padding: '20px' }}>
-          <p style={{ fontSize: 13, color: '#F1F1F1', marginBottom: 6 }}>Make your site readable by AI</p>
+          <p style={{ fontSize: 14, color: '#F1F1F1', marginBottom: 6 }}>Make your site readable by AI</p>
           <p style={{ fontSize: 12, color: '#707070', marginBottom: 16, lineHeight: 1.6 }}>
             Optic has generated an <code style={{ background: '#2A2A2A', padding: '1px 5px', borderRadius: 3, fontSize: 11 }}>llms.txt</code> file for your site. Upload it to Framer to make your site instantly readable by AI agents like ChatGPT, Perplexity, and Claude — no crawling required.
           </p>
@@ -266,7 +266,7 @@ export default function SettingsPage() {
               onClick={copyLlmsTxt}
               disabled={!selectedSite}
               style={{
-                padding: '7px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+                padding: '7px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500,
                 border: '1px solid #2A2A2A', background: llmsCopied ? '#1E3A2A' : 'transparent',
                 color: llmsCopied ? '#4ade80' : '#F1F1F1', cursor: selectedSite ? 'pointer' : 'not-allowed',
                 transition: 'all 0.15s',
@@ -289,18 +289,18 @@ export default function SettingsPage() {
       {/* Danger zone */}
       <div style={{ background: '#1A1A1A', border: '1px solid #3A1A1A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #3A1A1A' }}>
-          <p style={{ fontSize: 13, fontWeight: 500, color: '#E75C5C' }}>Danger zone</p>
+          <p style={{ fontSize: 14, fontWeight: 500, color: '#E75C5C' }}>Danger zone</p>
         </div>
         <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <p style={{ fontSize: 13, color: '#F1F1F1', marginBottom: 3 }}>Delete all conversation data</p>
+            <p style={{ fontSize: 14, color: '#F1F1F1', marginBottom: 3 }}>Delete all conversation data</p>
             <p style={{ fontSize: 12, color: '#707070' }}>Permanently removes all conversations for the selected site.</p>
           </div>
           <button
             onClick={deleteConversations}
             disabled={deleting || deleted}
             style={{
-              padding: '7px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+              padding: '7px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500,
               border: '1px solid #E75C5C', background: 'transparent',
               color: deleted ? '#4ade80' : deleting ? '#707070' : '#E75C5C',
               cursor: deleting || deleted ? 'not-allowed' : 'pointer',

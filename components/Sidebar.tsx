@@ -154,7 +154,7 @@ export default function Sidebar() {
                 gap: 9,
                 padding: '7px 10px',
                 borderRadius: 6,
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: active ? 500 : 400,
                 color: active ? '#F1F1F1' : '#606060',
                 background: active ? '#1A1A1A' : 'transparent',
