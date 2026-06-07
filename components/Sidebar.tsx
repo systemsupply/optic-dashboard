@@ -36,7 +36,7 @@ const nav = [
   },
   {
     label: 'Settings', href: '/dashboard/settings',
-    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" strokeWidth="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M2.9 2.9l1.06 1.06M11.04 11.04l1.06 1.06M2.9 12.1l1.06-1.06M11.04 3.96l1.06-1.06" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M6.3 1.5h2.4l.35 1.4c.3.1.58.25.84.43l1.35-.62 1.7 1.7-.62 1.35c.18.26.33.54.43.84l1.4.35v2.4l-1.4.35c-.1.3-.25.58-.43.84l.62 1.35-1.7 1.7-1.35-.62c-.26.18-.54.33-.84.43L8.7 13.5H6.3l-.35-1.4a3.8 3.8 0 0 1-.84-.43l-1.35.62-1.7-1.7.62-1.35a3.8 3.8 0 0 1-.43-.84L.85 8.05V5.65l1.4-.35c.1-.3.25-.58.43-.84l-.62-1.35 1.7-1.7 1.35.62c.26-.18.54-.33.84-.43L6.3 1.5z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/><circle cx="7.5" cy="7.5" r="1.8" stroke="currentColor" strokeWidth="1.2"/></svg>,
   },
 ]
 
