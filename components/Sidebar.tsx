@@ -141,7 +141,7 @@ export default function Sidebar() {
       )}
 
       {/* Nav */}
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '0 12px' }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '0 12px' }}>
         {nav.map(item => {
           const active = pathname === item.href
           return (
