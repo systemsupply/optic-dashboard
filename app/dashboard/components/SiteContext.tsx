@@ -16,6 +16,7 @@ interface SiteContextValue {
   setSelectedSiteId: (id: string) => void
   loading: boolean
   refreshSites: () => Promise<void>
+  updateSiteName: (id: string, name: string) => void
 }
 
 const SiteContext = createContext<SiteContextValue>({
@@ -24,6 +25,7 @@ const SiteContext = createContext<SiteContextValue>({
   setSelectedSiteId: () => {},
   loading: true,
   refreshSites: async () => {},
+  updateSiteName: () => {},
 })
 
 export function SiteProvider({ children }: { children: ReactNode }) {
@@ -78,8 +80,12 @@ export function SiteProvider({ children }: { children: ReactNode }) {
 
   const refreshSites = fetchSites
 
+  function updateSiteName(id: string, name: string) {
+    setSites(prev => prev.map(s => s.id === id ? { ...s, name } : s))
+  }
+
   return (
-    <SiteContext.Provider value={{ sites, selectedSite, setSelectedSiteId, loading, refreshSites }}>
+    <SiteContext.Provider value={{ sites, selectedSite, setSelectedSiteId, loading, refreshSites, updateSiteName }}>
       {children}
     </SiteContext.Provider>
   )

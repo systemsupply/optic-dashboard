@@ -20,7 +20,7 @@ function getSiteName(site: Site, index: number) {
 
 export default function SettingsPage() {
   const router = useRouter()
-  const { sites, selectedSite, setSelectedSiteId, refreshSites } = useSite()
+  const { sites, selectedSite, setSelectedSiteId, refreshSites, updateSiteName } = useSite()
   const [email, setEmail] = useState<string | null>(null)
   const [plan, setPlan] = useState<string>('starter')
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
@@ -72,9 +72,10 @@ export default function SettingsPage() {
 
   async function saveSiteName() {
     if (!selectedSite) return
-    await supabase.from('sites').update({ name: nameInput || null }).eq('id', selectedSite.id)
+    const newName = nameInput || null
+    updateSiteName(selectedSite.id, newName ?? '')
     setEditingName(false)
-    await refreshSites()
+    await supabase.from('sites').update({ name: newName }).eq('id', selectedSite.id)
   }
 
   async function deleteConversations() {
