@@ -74,7 +74,7 @@ export default function SettingsPage() {
     if (!selectedSite) return
     await supabase.from('sites').update({ name: nameInput || null }).eq('id', selectedSite.id)
     setEditingName(false)
-    window.location.reload()
+    await refreshSites()
   }
 
   async function deleteConversations() {
