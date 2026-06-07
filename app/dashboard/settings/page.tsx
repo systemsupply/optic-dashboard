@@ -29,6 +29,21 @@ export default function SettingsPage() {
   const [editingName, setEditingName] = useState(false)
   const [nameInput, setNameInput] = useState('')
   const [deletingSiteId, setDeletingSiteId] = useState<string | null>(null)
+  const [llmsCopied, setLlmsCopied] = useState(false)
+
+  async function copyLlmsTxt() {
+    if (!selectedSite) return
+    try {
+      const res = await fetch(`https://optic-api.vercel.app/api/llms?site_id=${selectedSite.id}`)
+      if (!res.ok) throw new Error('Failed to fetch')
+      const text = await res.text()
+      await navigator.clipboard.writeText(text)
+      setLlmsCopied(true)
+      setTimeout(() => setLlmsCopied(false), 3000)
+    } catch {
+      alert('Could not copy. Make sure your knowledge base has been scanned first.')
+    }
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -232,6 +247,41 @@ export default function SettingsPage() {
           >
             Sign out
           </button>
+        </div>
+      </div>
+
+      {/* AI Discoverability */}
+      <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>AI Discoverability</p>
+        </div>
+        <div style={{ padding: '20px' }}>
+          <p style={{ fontSize: 13, color: '#F1F1F1', marginBottom: 6 }}>Make your site readable by AI</p>
+          <p style={{ fontSize: 12, color: '#707070', marginBottom: 16, lineHeight: 1.6 }}>
+            Optic has generated an <code style={{ background: '#2A2A2A', padding: '1px 5px', borderRadius: 3, fontSize: 11 }}>llms.txt</code> file for your site. Upload it to Framer to make your site instantly readable by AI agents like ChatGPT, Perplexity, and Claude — no crawling required.
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <button
+              onClick={copyLlmsTxt}
+              disabled={!selectedSite}
+              style={{
+                padding: '7px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+                border: '1px solid #2A2A2A', background: llmsCopied ? '#1E3A2A' : 'transparent',
+                color: llmsCopied ? '#4ade80' : '#F1F1F1', cursor: selectedSite ? 'pointer' : 'not-allowed',
+                transition: 'all 0.15s',
+              }}
+            >
+              {llmsCopied ? 'Copied!' : 'Copy llms.txt'}
+            </button>
+            <a
+              href="https://www.framer.com/help/articles/llms-txt-framer/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: 12, color: '#707070', textDecoration: 'underline' }}
+            >
+              How to upload in Framer →
+            </a>
+          </div>
         </div>
       </div>
 
