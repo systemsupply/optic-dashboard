@@ -6,14 +6,38 @@ import { useState } from 'react'
 import { useSite } from '@/app/dashboard/components/SiteContext'
 
 const nav = [
-  { label: 'Overview',            href: '/dashboard' },
-  { label: 'Conversations',       href: '/dashboard/conversations' },
-  { label: 'Top Queries',         href: '/dashboard/top-queries' },
-  { label: 'Content Performance', href: '/dashboard/content-performance' },
-  { label: 'Dead Ends',           href: '/dashboard/dead-ends' },
-  { label: 'Knowledge Base',      href: '/dashboard/knowledge' },
-  { label: 'Locations',           href: '/dashboard/locations' },
-  { label: 'Settings',            href: '/dashboard/settings' },
+  {
+    label: 'Overview', href: '/dashboard',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.3"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.3"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.3"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.3"/></svg>,
+  },
+  {
+    label: 'Conversations', href: '/dashboard/conversations',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2.5C2 1.67 2.67 1 3.5 1h8c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5H5l-3 2.5V2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/></svg>,
+  },
+  {
+    label: 'Top Queries', href: '/dashboard/top-queries',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" strokeWidth="1.3"/><path d="M10 10.5l3.5 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+  },
+  {
+    label: 'Content Performance', href: '/dashboard/content-performance',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 11l4-4 3 3 5-6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  },
+  {
+    label: 'Dead Ends', href: '/dashboard/dead-ends',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5L13 13H2L7.5 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/><path d="M7.5 6v3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><circle cx="7.5" cy="10.5" r="0.75" fill="currentColor"/></svg>,
+  },
+  {
+    label: 'Knowledge Base', href: '/dashboard/knowledge',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="2" y="1" width="11" height="13" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M5 5h5M5 8h5M5 11h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+  },
+  {
+    label: 'Locations', href: '/dashboard/locations',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6" stroke="currentColor" strokeWidth="1.3"/><path d="M1.5 7.5h12M7.5 1.5C7.5 1.5 5 4 5 7.5S7.5 13.5 7.5 13.5M7.5 1.5C7.5 1.5 10 4 10 7.5S7.5 13.5 7.5 13.5" stroke="currentColor" strokeWidth="1.3"/></svg>,
+  },
+  {
+    label: 'Settings', href: '/dashboard/settings',
+    icon: <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" strokeWidth="1.3"/><path d="M7.5 1v1.5M7.5 12.5V14M1 7.5h1.5M12.5 7.5H14M2.9 2.9l1.06 1.06M11.04 11.04l1.06 1.06M2.9 12.1l1.06-1.06M11.04 3.96l1.06-1.06" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+  },
 ]
 
 function siteName(site: { id: string; name: string | null }, index: number) {
@@ -31,7 +55,7 @@ export default function Sidebar() {
     <aside style={{
       width: 220,
       minHeight: '100vh',
-      background: '#111111',
+      background: '#0E0E0E',
       borderRight: '1px solid #1E1E1E',
       display: 'flex',
       flexDirection: 'column',
@@ -40,15 +64,10 @@ export default function Sidebar() {
       position: 'relative',
     }}>
       {/* Logo */}
-      <div style={{ padding: '0 20px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
-        <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-          <circle cx="16" cy="16" r="14" stroke="#F1F1F1" strokeWidth="2"/>
-          <circle cx="16" cy="16" r="6" stroke="#F1F1F1" strokeWidth="2"/>
-          <circle cx="16" cy="16" r="2" fill="#F1F1F1"/>
+      <div style={{ padding: '0 20px 24px' }}>
+        <svg width="28" height="28" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fillRule="evenodd" clipRule="evenodd" d="M40 0C62.0914 0 80 17.9086 80 40C80 62.0914 62.0914 80 40 80C17.9086 80 0 62.0914 0 40C0 17.9086 17.9086 0 40 0ZM21.3333 9.33333C14.7059 9.33333 9.33333 14.7059 9.33333 21.3333V58.6667C9.33333 65.2941 14.7059 70.6667 21.3333 70.6667H58.6667C65.2941 70.6667 70.6667 65.2941 70.6667 58.6667V21.3333C70.6667 14.7059 65.2941 9.33333 58.6667 9.33333H21.3333Z" fill="#F1F1F1"/>
         </svg>
-        <span style={{ fontSize: 15, fontWeight: 600, color: '#F1F1F1', letterSpacing: '-0.2px' }}>
-          Optic
-        </span>
       </div>
 
       {/* Site switcher */}
@@ -130,17 +149,20 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               style={{
-                display: 'block',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 9,
                 padding: '7px 10px',
                 borderRadius: 6,
                 fontSize: 13,
                 fontWeight: active ? 500 : 400,
-                color: active ? '#F1F1F1' : '#707070',
-                background: active ? '#1E1E1E' : 'transparent',
+                color: active ? '#F1F1F1' : '#606060',
+                background: active ? '#1A1A1A' : 'transparent',
                 textDecoration: 'none',
                 transition: 'color 0.1s, background 0.1s',
               }}
             >
+              <span style={{ flexShrink: 0, display: 'flex' }}>{item.icon}</span>
               {item.label}
             </Link>
           )
