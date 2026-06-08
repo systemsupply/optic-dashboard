@@ -240,12 +240,12 @@ export default function OverviewPage() {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
+                <LineChart data={chartData} margin={{ top: 0, right: 0, bottom: 10, left: -20 }}>
                   <CartesianGrid stroke="#2A2A2A" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fill: '#707070', fontSize: 11 }} axisLine={false} tickLine={false} interval={range === 7 ? 0 : 4} />
+                  <XAxis dataKey="date" tick={{ fill: '#707070', fontSize: 11 }} axisLine={false} tickLine={false} interval={range === 7 ? 0 : 4} tickMargin={10} />
                   <YAxis tick={{ fill: '#707070', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Line type="monotone" dataKey="count" stroke="#4ade80" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#4ade80', strokeWidth: 0 }} />
+                  <Line type="linear" dataKey="count" stroke="#4ade80" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#4ade80', strokeWidth: 0 }} />
                 </LineChart>
               </ResponsiveContainer>
             )}
