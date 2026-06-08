@@ -40,7 +40,7 @@ export default function KnowledgePage() {
       .download(`${selectedSite.id}/knowledge.json`)
 
     if (error || !data) {
-      setError('No knowledge file found. Run Analyse in the Optic plugin to generate one.')
+      setError(`No knowledge file found. (${error?.message ?? 'unknown error'}) — Run Analyse in the Optic plugin to generate one.`)
       setLoading(false)
       return
     }
