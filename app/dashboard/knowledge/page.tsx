@@ -35,22 +35,22 @@ export default function KnowledgePage() {
     setLoading(true)
     setError(null)
 
-    const { data, error } = await supabase.storage
+    const { data: { publicUrl } } = supabase.storage
       .from('knowledge')
-      .download(`${selectedSite.id}/knowledge.json`)
+      .getPublicUrl(`${selectedSite.id}/knowledge.json`)
 
-    if (error || !data) {
-      setError(`No knowledge file found. (${error?.message ?? 'unknown error'}) — Run Analyse in the Optic plugin to generate one.`)
+    let knowledge: KnowledgeFile
+    try {
+      const res = await fetch(`${publicUrl}?t=${Date.now()}`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      knowledge = await res.json()
+    } catch (e: any) {
+      setError(`No knowledge file found. (${e.message}) — Run Analyse in the Optic plugin to generate one.`)
       setLoading(false)
       return
     }
 
-    try {
-      const text = await data.text()
-      setKnowledge(JSON.parse(text))
-    } catch {
-      setError('Could not parse knowledge file.')
-    }
+    setKnowledge(knowledge)
 
     setLoading(false)
   }
