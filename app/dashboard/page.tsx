@@ -247,7 +247,7 @@ export default function OverviewPage() {
                 <LineChart data={chartData} margin={{ top: 0, right: 0, bottom: 10, left: 0 }}>
                   <CartesianGrid stroke="#2A2A2A" vertical={false} />
                   <XAxis dataKey="date" tick={{ fill: '#707070', fontSize: 12 }} axisLine={false} tickLine={false} interval={range === 7 ? 0 : 4} tickMargin={10} />
-                  <YAxis hide />
+                  <YAxis hide domain={[0, 'dataMax']} tickCount={5} />
                   <Tooltip content={<CustomTooltip />} />
                   <Line type="linear" dataKey="count" stroke="#4ade80" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#4ade80', strokeWidth: 0 }} />
                 </LineChart>
