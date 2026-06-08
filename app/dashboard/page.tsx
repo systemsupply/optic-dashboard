@@ -70,7 +70,7 @@ const StatCard = ({ label, value, sub }: { label: string; value: string; sub?: s
     gap: 6,
   }}>
     <span style={{ fontSize: 12, color: '#707070', letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</span>
-    <span style={{ fontSize: 28, fontWeight: 600, color: '#F1F1F1', letterSpacing: '-0.5px', lineHeight: 1 }}>{value}</span>
+    <span style={{ fontSize: 56, fontWeight: 600, color: '#F1F1F1', letterSpacing: '-0.5px', lineHeight: 1 }}>{value}</span>
     {sub && <span style={{ fontSize: 12, color: '#707070' }}>{sub}</span>}
   </div>
 )
