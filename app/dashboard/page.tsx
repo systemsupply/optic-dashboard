@@ -251,7 +251,7 @@ export default function OverviewPage() {
             )}
           </div>
           {/* Map */}
-          <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden', padding: '20px 24px 0' }}>
+          <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, padding: '20px 24px 0' }}>
             <p style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 12 }}>
               Visitor locations
             </p>
@@ -260,10 +260,11 @@ export default function OverviewPage() {
                 No location data yet.
               </div>
             ) : (
+              <div style={{ overflow: 'hidden', borderRadius: 6, margin: '0 -24px' }}>
               <ComposableMap
                 projection="geoMercator"
                 projectionConfig={{ scale: 140, center: [0, 20] }}
-                style={{ width: '100%', height: 320 }}
+                style={{ width: '100%', height: 320, display: 'block' }}
               >
                 <Geographies geography={GEO_URL}>
                   {({ geographies }) =>
@@ -286,35 +287,26 @@ export default function OverviewPage() {
                   </Marker>
                 ))}
               </ComposableMap>
+              </div>
             )}
 
             {/* Country breakdown */}
             {countries.length > 0 && (
-              <div style={{ borderTop: '1px solid #2A2A2A', marginTop: 4 }}>
+              <div style={{ borderTop: '1px solid #2A2A2A', marginTop: 16 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', padding: '10px 0', borderBottom: '1px solid #2A2A2A' }}>
                   <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Country</span>
                   <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Conversations</span>
                 </div>
-                {countries.map((c, i) => {
-                  const max = countries[0].count
-                  return (
-                    <div key={c.country} style={{
-                      display: 'grid', gridTemplateColumns: '1fr 80px',
-                      padding: '10px 0', alignItems: 'center',
-                      borderBottom: i < countries.length - 1 ? '1px solid #1E1E1E' : 'none',
-                      position: 'relative',
-                    }}>
-                      <div style={{
-                        position: 'absolute', left: 0, top: 0, bottom: 0,
-                        width: `${(c.count / max) * 100}%`,
-                        background: '#4ade8010',
-                        borderRadius: i === 0 ? '4px 0 0 0' : 0,
-                      }} />
-                      <span style={{ fontSize: 13, color: '#F1F1F1', position: 'relative' }}>{c.country}</span>
-                      <span style={{ fontSize: 13, color: '#A0A0A0', textAlign: 'right', position: 'relative' }}>{c.count}</span>
-                    </div>
-                  )
-                })}
+                {countries.map((c, i) => (
+                  <div key={c.country} style={{
+                    display: 'grid', gridTemplateColumns: '1fr 80px',
+                    padding: '10px 0', alignItems: 'center',
+                    borderBottom: i < countries.length - 1 ? '1px solid #1E1E1E' : 'none',
+                  }}>
+                    <span style={{ fontSize: 13, color: '#F1F1F1' }}>{c.country}</span>
+                    <span style={{ fontSize: 13, color: '#A0A0A0', textAlign: 'right' }}>{c.count}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
