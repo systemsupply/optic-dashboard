@@ -230,7 +230,7 @@ export default function OverviewPage() {
               <ComposableMap
                 projection="geoMercator"
                 projectionConfig={{ scale: 120, center: [0, 10] }}
-                style={{ width: '100%', height: 320, display: 'block', marginLeft: -24, width: 'calc(100% + 48px)' } as React.CSSProperties}
+                style={{ width: 'calc(100% + 48px)', height: 320, display: 'block', marginLeft: -24 } as React.CSSProperties}
               >
                 <Geographies geography={GEO_URL}>
                   {({ geographies }) =>
