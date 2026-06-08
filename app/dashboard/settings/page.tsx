@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const [email, setEmail] = useState<string | null>(null)
   const [plan, setPlan] = useState<string>('starter')
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
+  const [hasSubscription, setHasSubscription] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [deleted, setDeleted] = useState(false)
   const [editingName, setEditingName] = useState(false)
@@ -51,13 +52,14 @@ export default function SettingsPage() {
       if (user) {
         supabase
           .from('clients')
-          .select('plan, trial_ends_at')
+          .select('plan, trial_ends_at, polar_subscription_id')
           .eq('user_id', user.id)
           .single()
           .then(({ data }) => {
             if (data) {
               setPlan(data.plan ?? 'starter')
               setTrialEndsAt(data.trial_ends_at ?? null)
+              setHasSubscription(!!data.polar_subscription_id)
             }
           })
       }
@@ -114,7 +116,7 @@ export default function SettingsPage() {
 
   const limit = PLAN_LIMITS[plan] ?? 1
   const trialDays = trialEndsAt ? daysLeft(trialEndsAt) : null
-  const inTrial = trialDays !== null && trialDays > 0
+  const inTrial = trialDays !== null && trialDays > 0 && !hasSubscription
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
