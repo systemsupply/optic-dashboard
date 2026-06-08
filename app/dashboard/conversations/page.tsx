@@ -68,7 +68,7 @@ export default function ConversationsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Conversations</h1>
-        <div style={{ display: 'flex', gap: 4, background: '#101010', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
+        <div style={{ display: 'flex', gap: 4, background: '#131313', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
           {(['all', 'found', 'none'] as const).map(f => (
             <button
               key={f}
@@ -89,7 +89,7 @@ export default function ConversationsPage() {
       {loading ? (
         <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
       ) : rows.length === 0 ? (
-        <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, padding: 40, textAlign: 'center', color: '#707070', fontSize: 14 }}>
+        <div style={{ background: '#131313', border: '1px solid #2A2A2A', borderRadius: 10, padding: 40, textAlign: 'center', color: '#707070', fontSize: 14 }}>
           No conversations yet.
         </div>
       ) : (
@@ -110,7 +110,7 @@ export default function ConversationsPage() {
             return (
               <div
                 key={row.id}
-                style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}
+                style={{ background: '#131313', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}
               >
                 {/* Header row */}
                 <div
@@ -166,11 +166,11 @@ export default function ConversationsPage() {
           <span style={{ fontSize: 14, color: '#707070' }}>{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total}</span>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
-              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 14, border: '1px solid #2A2A2A', background: '#101010', color: page === 0 ? '#404040' : '#A0A0A0', cursor: page === 0 ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 14, border: '1px solid #2A2A2A', background: '#131313', color: page === 0 ? '#404040' : '#A0A0A0', cursor: page === 0 ? 'not-allowed' : 'pointer' }}>
               Previous
             </button>
             <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 14, border: '1px solid #2A2A2A', background: '#101010', color: page >= totalPages - 1 ? '#404040' : '#A0A0A0', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 14, border: '1px solid #2A2A2A', background: '#131313', color: page >= totalPages - 1 ? '#404040' : '#A0A0A0', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer' }}>
               Next
             </button>
           </div>

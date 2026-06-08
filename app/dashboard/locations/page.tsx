@@ -68,7 +68,7 @@ export default function LocationsPage() {
       ) : (
         <>
           {/* World map */}
-          <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden', padding: '8px 0 0' }}>
+          <div style={{ background: '#131313', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden', padding: '8px 0 0' }}>
             <p style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0 20px 12px' }}>
               Visitor locations
             </p>
@@ -89,7 +89,7 @@ export default function LocationsPage() {
                         key={geo.rsmKey}
                         geography={geo}
                         style={{
-                          default: { fill: '#2A2A2A', stroke: '#101010', strokeWidth: 0.5, outline: 'none' },
+                          default: { fill: '#2A2A2A', stroke: '#131313', strokeWidth: 0.5, outline: 'none' },
                           hover: { fill: '#2A2A2A', outline: 'none' },
                           pressed: { fill: '#2A2A2A', outline: 'none' },
                         }}
@@ -99,7 +99,7 @@ export default function LocationsPage() {
                 </Geographies>
                 {markers.map((m, i) => (
                   <Marker key={i} coordinates={[m.lng, m.lat]}>
-                    <circle r={4} fill="#4ade80" fillOpacity={0.8} stroke="#101010" strokeWidth={1} />
+                    <circle r={4} fill="#4ade80" fillOpacity={0.8} stroke="#131313" strokeWidth={1} />
                   </Marker>
                 ))}
               </ComposableMap>
@@ -108,7 +108,7 @@ export default function LocationsPage() {
 
           {/* Country breakdown */}
           {countries.length > 0 && (
-            <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ background: '#131313', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
                 <span style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Country</span>
                 <span style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Conversations</span>

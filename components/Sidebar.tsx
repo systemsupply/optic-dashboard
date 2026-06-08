@@ -106,7 +106,7 @@ export default function Sidebar() {
               justifyContent: 'space-between',
               padding: '8px 10px',
               borderRadius: 6,
-              background: '#101010',
+              background: '#131313',
               border: '1px solid #2A2A2A',
               cursor: 'pointer',
               gap: 8,
@@ -129,7 +129,7 @@ export default function Sidebar() {
               top: '100%',
               left: 12,
               right: 12,
-              background: '#101010',
+              background: '#131313',
               border: '1px solid #2A2A2A',
               borderRadius: 8,
               overflow: 'hidden',
@@ -181,7 +181,7 @@ export default function Sidebar() {
                 fontSize: 14,
                 fontWeight: active ? 500 : 400,
                 color: active ? '#F1F1F1' : '#606060',
-                background: active ? '#101010' : 'transparent',
+                background: active ? '#131313' : 'transparent',
                 textDecoration: 'none',
                 transition: 'color 0.1s, background 0.1s',
               }}
@@ -240,7 +240,7 @@ export default function Sidebar() {
           {/* Panel */}
           <div style={{
             position: 'fixed', top: 0, right: 0, bottom: 0, width: 400,
-            background: '#101010', borderLeft: '1px solid #2A2A2A',
+            background: '#131313', borderLeft: '1px solid #2A2A2A',
             zIndex: 101, display: 'flex', flexDirection: 'column',
             animation: `${supportClosing ? 'slideOut' : 'slideIn'} 0.35s cubic-bezier(0.4,0,0.2,1) forwards`,
           }}>
@@ -273,7 +273,7 @@ export default function Sidebar() {
                 placeholder="What can we help you with?"
                 rows={8}
                 style={{
-                  background: '#101010', border: '1px solid #2A2A2A', borderRadius: 8,
+                  background: '#131313', border: '1px solid #2A2A2A', borderRadius: 8,
                   padding: '12px 16px', fontSize: 14, color: '#F1F1F1', outline: 'none',
                   resize: 'none', lineHeight: 1.6, fontFamily: 'inherit',
                 }}
@@ -297,7 +297,7 @@ export default function Sidebar() {
                 style={{
                   padding: '8px 18px', borderRadius: 6, fontSize: 14, fontWeight: 500,
                   border: 'none', background: sent ? '#1E3A2A' : '#F1F1F1',
-                  color: sent ? '#4ade80' : '#101010', cursor: message.trim() ? 'pointer' : 'not-allowed',
+                  color: sent ? '#4ade80' : '#131313', cursor: message.trim() ? 'pointer' : 'not-allowed',
                   opacity: !message.trim() ? 0.4 : 1,
                 }}
               >

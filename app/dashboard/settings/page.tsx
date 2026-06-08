@@ -126,7 +126,7 @@ export default function SettingsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
 
       {/* Plan */}
-      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#131313', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Plan</p>
         </div>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Sites */}
-      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#131313', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Sites</p>
           <p style={{ fontSize: 12, color: '#707070' }}>{sites.length} of {limit === Infinity ? 'unlimited' : limit} used</p>
@@ -177,7 +177,7 @@ export default function SettingsPage() {
                   autoFocus
                   placeholder={`Site ${i + 1}`}
                   style={{
-                    fontSize: 14, color: '#F1F1F1', background: '#101010',
+                    fontSize: 14, color: '#F1F1F1', background: '#131313',
                     border: '1px solid #404040', borderRadius: 4, padding: '3px 8px', outline: 'none', flex: 1,
                   }}
                 />
@@ -235,7 +235,7 @@ export default function SettingsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
 
       {/* Account */}
-      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#131313', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Account</p>
         </div>
@@ -260,7 +260,7 @@ export default function SettingsPage() {
       </div>
 
       {/* AI Discoverability */}
-      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#131313', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>AI Discoverability</p>
         </div>
@@ -297,7 +297,7 @@ export default function SettingsPage() {
       </div>{/* end row 2 */}
 
       {/* Danger zone */}
-      <div style={{ background: '#101010', border: '1px solid #3A1A1A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#131313', border: '1px solid #3A1A1A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #3A1A1A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#E75C5C' }}>Danger zone</p>
         </div>
