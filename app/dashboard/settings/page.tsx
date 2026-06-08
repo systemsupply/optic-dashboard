@@ -46,19 +46,22 @@ export default function SettingsPage() {
   }
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setEmail(data.user?.email ?? null)
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setEmail(user?.email ?? null)
+      if (user) {
+        supabase
+          .from('clients')
+          .select('plan, trial_ends_at')
+          .eq('user_id', user.id)
+          .single()
+          .then(({ data }) => {
+            if (data) {
+              setPlan(data.plan ?? 'starter')
+              setTrialEndsAt(data.trial_ends_at ?? null)
+            }
+          })
+      }
     })
-    supabase
-      .from('clients')
-      .select('plan, trial_ends_at')
-      .single()
-      .then(({ data }) => {
-        if (data) {
-          setPlan(data.plan ?? 'starter')
-          setTrialEndsAt(data.trial_ends_at ?? null)
-        }
-      })
   }, [])
 
   useEffect(() => {
