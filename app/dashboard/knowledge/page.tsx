@@ -59,34 +59,37 @@ export default function KnowledgePage() {
     !search || entry.text.toLowerCase().includes(search.toLowerCase()) || entry.name.toLowerCase().includes(search.toLowerCase())
   ) ?? []
 
+  const wordCount = knowledge
+    ? knowledge.content.reduce((sum, e) => sum + e.text.split(/\s+/).filter(Boolean).length, 0)
+    : 0
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-        <div>
-          <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Knowledge Base</h1>
-          <p style={{ fontSize: 13, color: '#707070', marginTop: 4 }}>
-            {knowledge ? `Last generated ${formatDate(knowledge.generated_at)}` : 'Content read by Optic from your site.'}
-          </p>
-        </div>
-        {knowledge && (
-          <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: '8px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: 18, fontWeight: 500, color: '#F1F1F1' }}>{knowledge.pages.length}</div>
-              <div style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pages</div>
-            </div>
-            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: '8px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: 18, fontWeight: 500, color: '#F1F1F1' }}>{knowledge.content.length}</div>
-              <div style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Entries</div>
-            </div>
-            {knowledge.collections.length > 0 && (
-              <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: '8px 16px', textAlign: 'center' }}>
-                <div style={{ fontSize: 18, fontWeight: 500, color: '#F1F1F1' }}>{knowledge.collections.length}</div>
-                <div style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Collections</div>
-              </div>
-            )}
-          </div>
-        )}
+      <div>
+        <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Knowledge Base</h1>
+        <p style={{ fontSize: 13, color: '#707070', marginTop: 4 }}>
+          {knowledge ? `Last generated ${formatDate(knowledge.generated_at)}` : 'Content read by Optic from your site.'}
+        </p>
       </div>
+
+      {knowledge && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          {[
+            { label: 'Pages Scanned', value: String(knowledge.pages.length) },
+            { label: 'CMS Collections', value: String(knowledge.collections.length) },
+            { label: 'Word Count', value: wordCount.toLocaleString() },
+          ].map(({ label, value }) => (
+            <div key={label} style={{
+              background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10,
+              padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 6,
+            }}>
+              <span style={{ fontSize: 12, color: '#707070', letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</span>
+              <span style={{ fontSize: 28, fontWeight: 600, color: '#F1F1F1', letterSpacing: '-0.5px', lineHeight: 1 }}>{value}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
 
       {loading ? (
         <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
