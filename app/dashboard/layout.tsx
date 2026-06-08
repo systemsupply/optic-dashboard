@@ -10,7 +10,7 @@ export default function DashboardLayout({
     <SiteProvider>
       <div style={{ display: 'flex', minHeight: '100vh', background: '#0E0E0E' }}>
         <Sidebar />
-        <main style={{ flex: 1, padding: '40px 48px', overflowY: 'scroll' }}>
+        <main style={{ flex: 1, padding: '40px 48px', overflowY: 'scroll', height: '100vh' }}>
           {children}
         </main>
       </div>
