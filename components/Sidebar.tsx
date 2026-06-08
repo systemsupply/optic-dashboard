@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useSite } from '@/app/dashboard/components/SiteContext'
+import { supabase } from '@/lib/supabase'
 
 const nav = [
   {
@@ -44,6 +45,24 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { sites, selectedSite, setSelectedSiteId } = useSite()
   const [switcherOpen, setSwitcherOpen] = useState(false)
+  const [supportOpen, setSupportOpen] = useState(false)
+  const [message, setMessage] = useState('')
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+
+  async function sendSupport() {
+    if (!message.trim()) return
+    setSending(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    window.location.href = `mailto:support@optic.sh?subject=Support request&body=${encodeURIComponent(message + '\n\n---\n' + (user?.email ?? ''))}`
+    setSending(false)
+    setSent(true)
+    setTimeout(() => {
+      setSent(false)
+      setMessage('')
+      setSupportOpen(false)
+    }, 1500)
+  }
 
   const selectedIndex = sites.findIndex(s => s.id === selectedSite?.id)
 
@@ -164,6 +183,115 @@ export default function Sidebar() {
           )
         })}
       </nav>
+
+      {/* Bottom links */}
+      <div style={{ marginTop: 'auto', padding: '20px 16px 0', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <button
+          onClick={() => setSupportOpen(true)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 9, padding: '7px 10px',
+            borderRadius: 6, fontSize: 14, fontWeight: 400, color: '#606060',
+            background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%',
+          }}
+        >
+          <span style={{ flexShrink: 0, display: 'flex' }}>
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6" stroke="currentColor" strokeWidth="1.3"/><path d="M7.5 5a1.5 1.5 0 1 1 0 3v1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><circle cx="7.5" cy="11" r="0.75" fill="currentColor"/></svg>
+          </span>
+          Support
+        </button>
+        <a
+          href="https://optic.sh/docs"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 9, padding: '7px 10px',
+            borderRadius: 6, fontSize: 14, fontWeight: 400, color: '#606060',
+            textDecoration: 'none',
+          }}
+        >
+          <span style={{ flexShrink: 0, display: 'flex' }}>
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="2" y="1" width="11" height="13" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M5 5h5M5 8h5M5 11h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+          </span>
+          Documentation
+        </a>
+      </div>
+
+      {/* Support slide-in panel */}
+      {supportOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={() => setSupportOpen(false)}
+            style={{
+              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+              zIndex: 100,
+            }}
+          />
+          {/* Panel */}
+          <div style={{
+            position: 'fixed', top: 0, right: 0, bottom: 0, width: 400,
+            background: '#111111', borderLeft: '1px solid #2A2A2A',
+            zIndex: 101, display: 'flex', flexDirection: 'column',
+            animation: 'slideIn 0.2s ease',
+          }}>
+            <style>{`@keyframes slideIn { from { transform: translateX(100%) } to { transform: translateX(0) } }`}</style>
+
+            {/* Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ fontSize: 16, fontWeight: 500, color: '#F1F1F1' }}>Support</h2>
+              <button
+                onClick={() => setSupportOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#606060', display: 'flex' }}
+              >
+                <svg width="16" height="16" viewBox="0 0 15 15" fill="none"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+              <p style={{ fontSize: 14, color: '#707070', lineHeight: 1.6 }}>
+                Describe your issue or question and we'll get back to you at your account email.
+              </p>
+              <textarea
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                placeholder="What can we help you with?"
+                rows={8}
+                style={{
+                  background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8,
+                  padding: '12px 16px', fontSize: 14, color: '#F1F1F1', outline: 'none',
+                  resize: 'none', lineHeight: 1.6, fontFamily: 'inherit',
+                }}
+              />
+            </div>
+
+            {/* Footer */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #2A2A2A', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button
+                onClick={() => setSupportOpen(false)}
+                style={{
+                  padding: '8px 18px', borderRadius: 6, fontSize: 14, fontWeight: 500,
+                  border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={sendSupport}
+                disabled={!message.trim() || sending || sent}
+                style={{
+                  padding: '8px 18px', borderRadius: 6, fontSize: 14, fontWeight: 500,
+                  border: 'none', background: sent ? '#1E3A2A' : '#F1F1F1',
+                  color: sent ? '#4ade80' : '#111111', cursor: message.trim() ? 'pointer' : 'not-allowed',
+                  opacity: !message.trim() ? 0.4 : 1,
+                }}
+              >
+                {sent ? 'Sent!' : sending ? 'Sending…' : 'Send'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </aside>
   )
 }
