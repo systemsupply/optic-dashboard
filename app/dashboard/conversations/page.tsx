@@ -139,12 +139,12 @@ export default function ConversationsPage() {
                     <div key={mi} style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 12, borderLeft: '2px solid #2A2A2A' }}>
                       <span style={{ fontSize: 12, color: '#F1F1F1', fontWeight: 500 }}>{msg.query}</span>
                       <span style={{ fontSize: 12, color: '#707070' }}>
-                        {msg.response?.type === 'text'
+                        {msg.response?.type === 'text' || msg.response?.type === 'no_results'
                           ? msg.response.answer
-                          : msg.response?.intro ?? msg.response?.type ?? '—'}
+                          : msg.response?.intro ?? '—'}
                       </span>
                       <span style={{ fontSize: 11, color: msg.had_results ? '#4ade80' : '#E75C5C' }}>
-                        {msg.had_results ? 'Results found' : 'No results'}
+                        {msg.had_results ? 'Results found' : 'Dead end'}
                       </span>
                     </div>
                   ))}
