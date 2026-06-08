@@ -7,6 +7,7 @@ import { useSite } from '../components/SiteContext'
 interface KnowledgeContent {
   name: string
   text: string
+  page?: string
 }
 
 interface KnowledgeFile {
@@ -58,6 +59,14 @@ export default function KnowledgePage() {
   const filtered = knowledge?.content.filter(entry =>
     !search || entry.text.toLowerCase().includes(search.toLowerCase()) || entry.name.toLowerCase().includes(search.toLowerCase())
   ) ?? []
+
+  // Group entries by page
+  const grouped = filtered.reduce<Record<string, KnowledgeContent[]>>((acc, entry) => {
+    const key = entry.page || 'Unknown'
+    if (!acc[key]) acc[key] = []
+    acc[key].push(entry)
+    return acc
+  }, {})
 
   const wordCount = knowledge
     ? knowledge.content.reduce((sum, e) => sum + e.text.split(/\s+/).filter(Boolean).length, 0)
@@ -113,36 +122,41 @@ export default function KnowledgePage() {
             }}
           />
 
-          <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
-              {['Source', 'Content'].map(h => (
-                <span key={h} style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</span>
+          {filtered.length === 0 ? (
+            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, padding: 32, textAlign: 'center', color: '#707070', fontSize: 13 }}>
+              No entries match your search.
+            </div>
+          ) : Object.entries(grouped).map(([pagePath, entries]) => (
+            <div key={pagePath} style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+              <div style={{ padding: '12px 20px', borderBottom: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>{pagePath}</span>
+                <span style={{ fontSize: 11, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', padding: '8px 20px', borderBottom: '1px solid #222' }}>
+                {['Source', 'Content'].map(h => (
+                  <span key={h} style={{ fontSize: 11, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</span>
+                ))}
+              </div>
+              {entries.map((entry, i) => (
+                <div key={i} style={{
+                  display: 'grid', gridTemplateColumns: '160px 1fr',
+                  padding: '12px 20px', alignItems: 'start',
+                  borderBottom: i < entries.length - 1 ? '1px solid #1E1E1E' : 'none',
+                }}>
+                  <span style={{ fontSize: 12, color: '#606060', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {entry.name}
+                  </span>
+                  <span style={{ fontSize: 13, color: '#A0A0A0', lineHeight: 1.5 }}>
+                    {entry.text}
+                  </span>
+                </div>
               ))}
             </div>
+          ))}
 
-            {filtered.length === 0 ? (
-              <div style={{ padding: 32, textAlign: 'center', color: '#707070', fontSize: 13 }}>No entries match your search.</div>
-            ) : filtered.map((entry, i) => (
-              <div key={i} style={{
-                display: 'grid', gridTemplateColumns: '160px 1fr',
-                padding: '12px 20px', alignItems: 'start',
-                borderBottom: i < filtered.length - 1 ? '1px solid #1E1E1E' : 'none',
-              }}>
-                <span style={{ fontSize: 12, color: '#707070', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {entry.name}
-                </span>
-                <span style={{ fontSize: 13, color: '#A0A0A0', lineHeight: 1.5 }}>
-                  {entry.text}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {filtered.length > 0 && (
-            <p style={{ fontSize: 12, color: '#3A3A3A' }}>
-              {filtered.length} of {knowledge.content.length} entries
-            </p>
-          )}
+          <p style={{ fontSize: 12, color: '#3A3A3A' }}>
+            {filtered.length} of {knowledge.content.length} entries
+          </p>
         </>
       )}
     </div>
