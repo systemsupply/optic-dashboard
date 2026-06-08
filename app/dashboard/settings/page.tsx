@@ -122,6 +122,9 @@ export default function SettingsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Settings</h1>
 
+      {/* Row 1: Plan + Sites */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
+
       {/* Plan */}
       <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
@@ -231,6 +234,11 @@ export default function SettingsPage() {
         ))}
       </div>
 
+      </div>{/* end row 1 */}
+
+      {/* Row 2: Account + AI Discoverability */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
+
       {/* Account */}
       <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
@@ -290,6 +298,8 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      </div>{/* end row 2 */}
 
       {/* Danger zone */}
       <div style={{ background: '#171717', border: '1px solid #3A1A1A', borderRadius: 10, overflow: 'hidden' }}>
