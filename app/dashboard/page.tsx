@@ -1,12 +1,40 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useSite } from './components/SiteContext'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps'
 
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
+
+function getProjectionConfig(
+  markers: { lat: number; lng: number }[],
+  containerWidth: number
+): { scale: number; center: [number, number] } {
+  if (markers.length === 0) return { scale: 120, center: [0, 10] }
+
+  const lngs = markers.map(m => m.lng)
+  const lats = markers.map(m => m.lat)
+  const minLng = Math.min(...lngs)
+  const maxLng = Math.max(...lngs)
+  const minLat = Math.min(...lats)
+  const maxLat = Math.max(...lats)
+
+  const centerLng = (minLng + maxLng) / 2
+  const centerLat = (minLat + maxLat) / 2
+
+  // Minimum span so a single country still shows regional context
+  const lngSpan = Math.max(maxLng - minLng + 20, 50)
+  const latSpan = Math.max(maxLat - minLat + 15, 35)
+
+  // d3 Mercator: scale = pixels per radian at the projection centre
+  const scaleFromLng = containerWidth / (lngSpan * Math.PI / 180)
+  const scaleFromLat = 300 / (latSpan * Math.PI / 180)
+  const scale = Math.min(Math.max(Math.min(scaleFromLng, scaleFromLat), 80), 1200)
+
+  return { scale, center: [centerLng, centerLat] }
+}
 
 interface StatsData {
   totalConversations: number
@@ -67,6 +95,18 @@ export default function OverviewPage() {
   const [countries, setCountries] = useState<CountryStat[]>([])
   const [loading, setLoading] = useState(true)
   const [range, setRange] = useState<7 | 30>(30)
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const [mapWidth, setMapWidth] = useState(700)
+
+  useEffect(() => {
+    const el = mapContainerRef.current
+    if (!el) return
+    const observer = new ResizeObserver(entries => {
+      setMapWidth(entries[0].contentRect.width)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     if (selectedSite) {
@@ -212,13 +252,17 @@ export default function OverviewPage() {
           </div>
 
           {/* Row 3 — map (2 cols) */}
-          <div style={{
-            gridColumn: 'span 2',
-            background: '#171717',
-            border: '1px solid #2A2A2A',
-            borderRadius: 10,
-            padding: '20px 24px 0',
-          }}>
+          <div
+            ref={mapContainerRef}
+            style={{
+              gridColumn: 'span 2',
+              background: '#171717',
+              border: '1px solid #2A2A2A',
+              borderRadius: 10,
+              padding: '20px 24px 0',
+              overflow: 'hidden',
+            }}
+          >
             <p style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 12 }}>
               Visitor locations
             </p>
@@ -226,34 +270,37 @@ export default function OverviewPage() {
               <div style={{ height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#707070', fontSize: 14 }}>
                 No location data yet.
               </div>
-            ) : (
-              <ComposableMap
-                projection="geoMercator"
-                projectionConfig={{ scale: 120, center: [0, 10] }}
-                style={{ width: 'calc(100% + 48px)', height: 320, display: 'block', marginLeft: -24 } as React.CSSProperties}
-              >
-                <Geographies geography={GEO_URL}>
-                  {({ geographies }) =>
-                    geographies.map(geo => (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        style={{
-                          default: { fill: '#2A2A2A', stroke: '#111111', strokeWidth: 0.5, outline: 'none' },
-                          hover: { fill: '#2A2A2A', outline: 'none' },
-                          pressed: { fill: '#2A2A2A', outline: 'none' },
-                        }}
-                      />
-                    ))
-                  }
-                </Geographies>
-                {markers.map((m, i) => (
-                  <Marker key={i} coordinates={[m.lng, m.lat]}>
-                    <circle r={4} fill="#4ade80" fillOpacity={0.8} stroke="#111111" strokeWidth={1} />
-                  </Marker>
-                ))}
-              </ComposableMap>
-            )}
+            ) : (() => {
+              const proj = getProjectionConfig(markers, mapWidth)
+              return (
+                <ComposableMap
+                  projection="geoMercator"
+                  projectionConfig={{ scale: proj.scale, center: proj.center }}
+                  style={{ width: '100%', height: 300, display: 'block', marginBottom: -6 }}
+                >
+                  <Geographies geography={GEO_URL}>
+                    {({ geographies }) =>
+                      geographies.map(geo => (
+                        <Geography
+                          key={geo.rsmKey}
+                          geography={geo}
+                          style={{
+                            default: { fill: '#2A2A2A', stroke: '#111111', strokeWidth: 0.5, outline: 'none' },
+                            hover: { fill: '#2A2A2A', outline: 'none' },
+                            pressed: { fill: '#2A2A2A', outline: 'none' },
+                          }}
+                        />
+                      ))
+                    }
+                  </Geographies>
+                  {markers.map((m, i) => (
+                    <Marker key={i} coordinates={[m.lng, m.lat]}>
+                      <circle r={5} fill="#4ade80" fillOpacity={0.9} stroke="#111111" strokeWidth={1} />
+                    </Marker>
+                  ))}
+                </ComposableMap>
+              )
+            })()}
           </div>
 
           {/* Row 3 — countries (1 col) */}
