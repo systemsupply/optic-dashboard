@@ -89,7 +89,7 @@ export default function KnowledgePage() {
             { label: 'Word Count', value: wordCount.toLocaleString() },
           ].map(({ label, value }) => (
             <div key={label} style={{
-              background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10,
+              background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10,
               padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 6,
             }}>
               <span style={{ fontSize: 12, color: '#707070', letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</span>
@@ -104,7 +104,7 @@ export default function KnowledgePage() {
         <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
       ) : error ? (
         <div style={{
-          background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10,
+          background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10,
           padding: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
         }}>
           <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>No knowledge base yet.</p>
@@ -117,31 +117,31 @@ export default function KnowledgePage() {
             onChange={e => setSearch(e.target.value)}
             placeholder="Search entries…"
             style={{
-              background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8,
+              background: '#101010', border: '1px solid #2A2A2A', borderRadius: 8,
               padding: '10px 16px', fontSize: 14, color: '#F1F1F1', outline: 'none', width: '100%',
             }}
           />
 
           {filtered.length === 0 ? (
-            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, padding: 32, textAlign: 'center', color: '#707070', fontSize: 14 }}>
+            <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, padding: 32, textAlign: 'center', color: '#707070', fontSize: 14 }}>
               No entries match your search.
             </div>
           ) : Object.entries(grouped).map(([pagePath, entries]) => (
-            <div key={pagePath} style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+            <div key={pagePath} style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
               <div style={{ padding: '12px 20px', borderBottom: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>{pagePath}</span>
-                <span style={{ fontSize: 12, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span>
+                <span style={{ fontSize: 12, color: '#606060', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', padding: '8px 20px', borderBottom: '1px solid #222' }}>
                 {['Source', 'Content'].map(h => (
-                  <span key={h} style={{ fontSize: 12, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</span>
+                  <span key={h} style={{ fontSize: 12, color: '#606060', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</span>
                 ))}
               </div>
               {entries.map((entry, i) => (
                 <div key={i} style={{
                   display: 'grid', gridTemplateColumns: '160px 1fr',
                   padding: '12px 20px', alignItems: 'start',
-                  borderBottom: i < entries.length - 1 ? '1px solid #1E1E1E' : 'none',
+                  borderBottom: i < entries.length - 1 ? '1px solid #2A2A2A' : 'none',
                 }}>
                   <span style={{ fontSize: 12, color: '#606060', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {entry.name}
@@ -154,7 +154,7 @@ export default function KnowledgePage() {
             </div>
           ))}
 
-          <p style={{ fontSize: 12, color: '#3A3A3A' }}>
+          <p style={{ fontSize: 12, color: '#404040' }}>
             {filtered.length} of {knowledge.content.length} entries
           </p>
         </>

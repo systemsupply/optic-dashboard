@@ -66,7 +66,7 @@ export default function TopQueriesPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Top Queries</h1>
-        <div style={{ display: 'flex', gap: 4, background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
+        <div style={{ display: 'flex', gap: 4, background: '#101010', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
           {([7, 30] as const).map(r => (
             <button key={r} onClick={() => setRange(r)} style={{
               padding: '5px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500,
@@ -78,7 +78,7 @@ export default function TopQueriesPage() {
         </div>
       </div>
 
-      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
           {['Query', 'Count', 'Found'].map(h => (
             <span key={h} style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: h !== 'Query' ? 'right' : 'left' }}>{h}</span>
@@ -93,7 +93,7 @@ export default function TopQueriesPage() {
           <div key={row.query} style={{
             display: 'grid', gridTemplateColumns: '1fr 80px 80px',
             padding: '11px 20px', alignItems: 'center',
-            borderBottom: i < rows.length - 1 ? '1px solid #1E1E1E' : 'none',
+            borderBottom: i < rows.length - 1 ? '1px solid #2A2A2A' : 'none',
             position: 'relative',
           }}>
             {/* Frequency bar */}

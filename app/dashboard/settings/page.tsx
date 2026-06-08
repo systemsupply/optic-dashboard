@@ -126,7 +126,7 @@ export default function SettingsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
 
       {/* Plan */}
-      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Plan</p>
         </div>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Sites */}
-      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Sites</p>
           <p style={{ fontSize: 12, color: '#707070' }}>{sites.length} of {limit === Infinity ? 'unlimited' : limit} used</p>
@@ -165,10 +165,10 @@ export default function SettingsPage() {
           <div key={site.id} style={{
             padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             borderBottom: i < sites.length - 1 ? '1px solid #2A2A2A' : 'none',
-            background: site.id === selectedSite?.id ? '#1E1E1E' : 'transparent',
+            background: site.id === selectedSite?.id ? '#2A2A2A' : 'transparent',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: site.id === selectedSite?.id ? '#4ade80' : '#414141', flexShrink: 0 }} />
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: site.id === selectedSite?.id ? '#4ade80' : '#404040', flexShrink: 0 }} />
               {editingName && site.id === selectedSite?.id ? (
                 <input
                   value={nameInput}
@@ -177,8 +177,8 @@ export default function SettingsPage() {
                   autoFocus
                   placeholder={`Site ${i + 1}`}
                   style={{
-                    fontSize: 14, color: '#F1F1F1', background: '#111111',
-                    border: '1px solid #414141', borderRadius: 4, padding: '3px 8px', outline: 'none', flex: 1,
+                    fontSize: 14, color: '#F1F1F1', background: '#101010',
+                    border: '1px solid #404040', borderRadius: 4, padding: '3px 8px', outline: 'none', flex: 1,
                   }}
                 />
               ) : (
@@ -235,7 +235,7 @@ export default function SettingsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
 
       {/* Account */}
-      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Account</p>
         </div>
@@ -260,7 +260,7 @@ export default function SettingsPage() {
       </div>
 
       {/* AI Discoverability */}
-      <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#101010', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>AI Discoverability</p>
         </div>
@@ -297,7 +297,7 @@ export default function SettingsPage() {
       </div>{/* end row 2 */}
 
       {/* Danger zone */}
-      <div style={{ background: '#171717', border: '1px solid #3A1A1A', borderRadius: 10, overflow: 'hidden' }}>
+      <div style={{ background: '#101010', border: '1px solid #3A1A1A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #3A1A1A' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#E75C5C' }}>Danger zone</p>
         </div>
