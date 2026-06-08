@@ -126,7 +126,7 @@ export default function OverviewPage() {
 
     const { data: convs } = await supabase
       .from('conversations')
-      .select('id, had_results, country, created_at')
+      .select('id, had_results, messages, country, created_at')
       .eq('site_id', selectedSite.id)
       .gte('created_at', sinceIso)
       .order('created_at', { ascending: true })
@@ -134,9 +134,13 @@ export default function OverviewPage() {
     if (!convs) { setLoading(false); return }
 
     const total = convs.length
-    const hadResults = convs.filter(c => c.had_results).length
-    const rate = total > 0 ? Math.round((hadResults / total) * 100) : 0
-    const deadEnds = convs.filter(c => !c.had_results).length
+
+    // Count individual messages across all conversations
+    const allMessages = convs.flatMap(c => c.messages ?? [])
+    const totalMessages = allMessages.length
+    const foundMessages = allMessages.filter((m: any) => m.had_results).length
+    const rate = totalMessages > 0 ? Math.round((foundMessages / totalMessages) * 100) : 0
+    const deadEnds = allMessages.filter((m: any) => !m.had_results).length
 
     setStats({ totalConversations: total, hadResultsRate: rate, deadEnds })
 
