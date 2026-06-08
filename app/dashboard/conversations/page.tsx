@@ -99,6 +99,18 @@ export default function ConversationsPage() {
             const msgCount = row.message_count ?? row.messages?.length ?? 1
             const isExpanded = expanded === row.id
 
+            // Derive result status from individual messages when available
+            const msgs = row.messages ?? []
+            const allFound = msgs.length > 0 && msgs.every(m => m.had_results)
+            const allDead = msgs.length > 0 && msgs.every(m => !m.had_results)
+            const statusColor = allFound ? '#4ade80' : allDead ? '#E75C5C' : '#facc15'
+            const statusLabel = allFound ? 'Found' : allDead ? 'Dead end' : 'Mixed'
+
+            // Location: "City, CC" or fallback
+            const location = row.city && row.country
+              ? `${row.city}, ${row.country}`
+              : row.city ?? row.country ?? '—'
+
             return (
               <div
                 key={row.id}
@@ -108,7 +120,7 @@ export default function ConversationsPage() {
                 <div
                   onClick={() => setExpanded(isExpanded ? null : row.id)}
                   style={{
-                    display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px',
+                    display: 'grid', gridTemplateColumns: '1fr 100px 120px 80px',
                     padding: '14px 20px', alignItems: 'center', cursor: 'pointer',
                   }}
                 >
@@ -123,10 +135,10 @@ export default function ConversationsPage() {
                     )}
                   </div>
                   <span style={{ fontSize: 13, color: '#707070' }}>{timeAgo(row.created_at)}</span>
-                  <span style={{ fontSize: 13, color: '#A0A0A0' }}>{row.city ?? row.country ?? '—'}</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: row.had_results ? '#4ade80' : '#E75C5C', fontWeight: 500 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: row.had_results ? '#4ade80' : '#E75C5C', flexShrink: 0 }} />
-                    {row.had_results ? 'Found' : 'Dead end'}
+                  <span style={{ fontSize: 13, color: '#A0A0A0' }}>{location}</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: statusColor, fontWeight: 500 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: statusColor, flexShrink: 0 }} />
+                    {statusLabel}
                   </span>
                 </div>
 
