@@ -46,9 +46,18 @@ export default function Sidebar() {
   const { sites, selectedSite, setSelectedSiteId } = useSite()
   const [switcherOpen, setSwitcherOpen] = useState(false)
   const [supportOpen, setSupportOpen] = useState(false)
+  const [supportClosing, setSupportClosing] = useState(false)
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+
+  function closeSupport() {
+    setSupportClosing(true)
+    setTimeout(() => {
+      setSupportOpen(false)
+      setSupportClosing(false)
+    }, 320)
+  }
 
   async function sendSupport() {
     if (!message.trim()) return
@@ -60,7 +69,7 @@ export default function Sidebar() {
     setTimeout(() => {
       setSent(false)
       setMessage('')
-      setSupportOpen(false)
+      closeSupport()
     }, 1500)
   }
 
@@ -221,10 +230,11 @@ export default function Sidebar() {
         <>
           {/* Backdrop */}
           <div
-            onClick={() => setSupportOpen(false)}
+            onClick={closeSupport}
             style={{
               position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
               zIndex: 100,
+              animation: `${supportClosing ? 'fadeOut' : 'fadeIn'} 0.35s cubic-bezier(0.4,0,0.2,1) forwards`,
             }}
           />
           {/* Panel */}
@@ -232,15 +242,20 @@ export default function Sidebar() {
             position: 'fixed', top: 0, right: 0, bottom: 0, width: 400,
             background: '#111111', borderLeft: '1px solid #2A2A2A',
             zIndex: 101, display: 'flex', flexDirection: 'column',
-            animation: 'slideIn 0.2s ease',
+            animation: `${supportClosing ? 'slideOut' : 'slideIn'} 0.35s cubic-bezier(0.4,0,0.2,1) forwards`,
           }}>
-            <style>{`@keyframes slideIn { from { transform: translateX(100%) } to { transform: translateX(0) } }`}</style>
+            <style>{`
+              @keyframes slideIn { from { transform: translateX(100%) } to { transform: translateX(0) } }
+              @keyframes slideOut { from { transform: translateX(0) } to { transform: translateX(100%) } }
+              @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+              @keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
+            `}</style>
 
             {/* Header */}
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h2 style={{ fontSize: 16, fontWeight: 500, color: '#F1F1F1' }}>Support</h2>
               <button
-                onClick={() => setSupportOpen(false)}
+                onClick={closeSupport}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#606060', display: 'flex' }}
               >
                 <svg width="16" height="16" viewBox="0 0 15 15" fill="none"><path d="M2 2l11 11M13 2L2 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
@@ -268,7 +283,7 @@ export default function Sidebar() {
             {/* Footer */}
             <div style={{ padding: '16px 24px', borderTop: '1px solid #2A2A2A', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
               <button
-                onClick={() => setSupportOpen(false)}
+                onClick={closeSupport}
                 style={{
                   padding: '8px 18px', borderRadius: 6, fontSize: 14, fontWeight: 500,
                   border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0', cursor: 'pointer',
