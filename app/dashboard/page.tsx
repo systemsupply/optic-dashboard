@@ -11,8 +11,7 @@ const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 interface StatsData {
   totalConversations: number
   hadResultsRate: number
-  topQuery: string
-  topCountry: string
+  deadEnds: number
 }
 
 interface ChartPoint {
@@ -85,48 +84,28 @@ export default function OverviewPage() {
     since.setDate(since.getDate() - range)
     const sinceIso = since.toISOString()
 
-    // Fetch all conversations in range for selected site
     const { data: convs } = await supabase
       .from('conversations')
-      .select('id, visitor_query, had_results, country, created_at')
+      .select('id, had_results, country, created_at')
       .eq('site_id', selectedSite.id)
       .gte('created_at', sinceIso)
       .order('created_at', { ascending: true })
 
     if (!convs) { setLoading(false); return }
 
-    // Stats
     const total = convs.length
     const hadResults = convs.filter(c => c.had_results).length
     const rate = total > 0 ? Math.round((hadResults / total) * 100) : 0
+    const deadEnds = convs.filter(c => !c.had_results).length
 
-    // Top query
-    const queryCounts: Record<string, number> = {}
-    convs.forEach(c => {
-      if (c.visitor_query) {
-        const q = c.visitor_query.toLowerCase().trim()
-        queryCounts[q] = (queryCounts[q] || 0) + 1
-      }
-    })
-    const topQuery = Object.entries(queryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—'
+    setStats({ totalConversations: total, hadResultsRate: rate, deadEnds })
 
-    // Top country
-    const countryCounts: Record<string, number> = {}
-    convs.forEach(c => {
-      if (c.country) countryCounts[c.country] = (countryCounts[c.country] || 0) + 1
-    })
-    const topCountry = Object.entries(countryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—'
-
-    setStats({ totalConversations: total, hadResultsRate: rate, topQuery, topCountry })
-
-    // Chart data — group by day
+    // Chart — group by day
     const dayMap: Record<string, number> = {}
-    const days = range
-    for (let i = 0; i < days; i++) {
+    for (let i = 0; i < range; i++) {
       const d = new Date()
-      d.setDate(d.getDate() - (days - 1 - i))
-      const key = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-      dayMap[key] = 0
+      d.setDate(d.getDate() - (range - 1 - i))
+      dayMap[d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })] = 0
     }
     convs.forEach(c => {
       const key = new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
@@ -134,7 +113,7 @@ export default function OverviewPage() {
     })
     setChartData(Object.entries(dayMap).map(([date, count]) => ({ date, count })))
 
-    // Location data — all time, not range-limited
+    // Location data — all time
     const { data: locData } = await supabase
       .from('conversations')
       .select('country, city, latitude, longitude')
@@ -159,7 +138,7 @@ export default function OverviewPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Overview</h1>
@@ -186,7 +165,6 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      {/* Stat cards */}
       {loading ? (
         <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
       ) : !selectedSite ? (
@@ -198,22 +176,22 @@ export default function OverviewPage() {
           <p style={{ color: '#707070', fontSize: 13 }}>Install the Optic plugin in Framer to get started.</p>
         </div>
       ) : (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-            <StatCard label="Conversations" value={stats?.totalConversations.toLocaleString() ?? '0'} sub={`Last ${range} days`} />
-            <StatCard label="Results found" value={`${stats?.hadResultsRate ?? 0}%`} sub="Had matching content" />
-            <StatCard label="Top query" value={stats?.topQuery ?? '—'} />
-            <StatCard label="Top country" value={stats?.topCountry ?? '—'} />
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
 
-          {/* Chart */}
+          {/* Row 1 — stat cards */}
+          <StatCard label="Conversations" value={stats?.totalConversations.toLocaleString() ?? '0'} sub={`Last ${range} days`} />
+          <StatCard label="Results found" value={`${stats?.hadResultsRate ?? 0}%`} sub="Had matching content" />
+          <StatCard label="Dead ends" value={stats?.deadEnds.toLocaleString() ?? '0'} sub="No results returned" />
+
+          {/* Row 2 — chart, full width */}
           <div style={{
+            gridColumn: 'span 3',
             background: '#171717',
             border: '1px solid #2A2A2A',
             borderRadius: 10,
             padding: '24px 24px 16px',
           }}>
-            <p style={{ fontSize: 13, color: '#707070', marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+            <p style={{ fontSize: 12, color: '#707070', marginBottom: 20, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Conversation volume
             </p>
             {chartData.length === 0 || chartData.every(d => d.count === 0) ? (
@@ -224,34 +202,24 @@ export default function OverviewPage() {
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
                   <CartesianGrid stroke="#2A2A2A" vertical={false} />
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fill: '#707070', fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                    interval={range === 7 ? 0 : 4}
-                  />
-                  <YAxis
-                    tick={{ fill: '#707070', fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                    allowDecimals={false}
-                  />
+                  <XAxis dataKey="date" tick={{ fill: '#707070', fontSize: 11 }} axisLine={false} tickLine={false} interval={range === 7 ? 0 : 4} />
+                  <YAxis tick={{ fill: '#707070', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Line
-                    type="monotone"
-                    dataKey="count"
-                    stroke="#4ade80"
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4, fill: '#4ade80', strokeWidth: 0 }}
-                  />
+                  <Line type="monotone" dataKey="count" stroke="#4ade80" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#4ade80', strokeWidth: 0 }} />
                 </LineChart>
               </ResponsiveContainer>
             )}
           </div>
-          {/* Map */}
-          <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, padding: '20px 24px 0' }}>
+
+          {/* Row 3 — map (2 cols) */}
+          <div style={{
+            gridColumn: 'span 2',
+            background: '#171717',
+            border: '1px solid #2A2A2A',
+            borderRadius: 10,
+            padding: '20px 24px',
+            overflow: 'hidden',
+          }}>
             <p style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 12 }}>
               Visitor locations
             </p>
@@ -260,47 +228,63 @@ export default function OverviewPage() {
                 No location data yet.
               </div>
             ) : (
-              <div style={{ overflow: 'hidden', borderRadius: 6, margin: '0 -24px' }}>
-              <ComposableMap
-                projection="geoMercator"
-                projectionConfig={{ scale: 140, center: [0, 20] }}
-                style={{ width: '100%', height: 320, display: 'block' }}
-              >
-                <Geographies geography={GEO_URL}>
-                  {({ geographies }) =>
-                    geographies.map(geo => (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        style={{
-                          default: { fill: '#2A2A2A', stroke: '#111111', strokeWidth: 0.5, outline: 'none' },
-                          hover: { fill: '#2A2A2A', outline: 'none' },
-                          pressed: { fill: '#2A2A2A', outline: 'none' },
-                        }}
-                      />
-                    ))
-                  }
-                </Geographies>
-                {markers.map((m, i) => (
-                  <Marker key={i} coordinates={[m.lng, m.lat]}>
-                    <circle r={4} fill="#4ade80" fillOpacity={0.8} stroke="#111111" strokeWidth={1} />
-                  </Marker>
-                ))}
-              </ComposableMap>
+              <div style={{ margin: '0 -24px', overflow: 'hidden' }}>
+                <ComposableMap
+                  projection="geoMercator"
+                  projectionConfig={{ scale: 140, center: [0, 20] }}
+                  style={{ width: '100%', height: 300, display: 'block' }}
+                >
+                  <Geographies geography={GEO_URL}>
+                    {({ geographies }) =>
+                      geographies.map(geo => (
+                        <Geography
+                          key={geo.rsmKey}
+                          geography={geo}
+                          style={{
+                            default: { fill: '#2A2A2A', stroke: '#111111', strokeWidth: 0.5, outline: 'none' },
+                            hover: { fill: '#2A2A2A', outline: 'none' },
+                            pressed: { fill: '#2A2A2A', outline: 'none' },
+                          }}
+                        />
+                      ))
+                    }
+                  </Geographies>
+                  {markers.map((m, i) => (
+                    <Marker key={i} coordinates={[m.lng, m.lat]}>
+                      <circle r={4} fill="#4ade80" fillOpacity={0.8} stroke="#111111" strokeWidth={1} />
+                    </Marker>
+                  ))}
+                </ComposableMap>
               </div>
             )}
+          </div>
 
-            {/* Country breakdown */}
-            {countries.length > 0 && (
-              <div style={{ borderTop: '1px solid #2A2A2A', marginTop: 16 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', padding: '10px 0', borderBottom: '1px solid #2A2A2A' }}>
+          {/* Row 3 — countries (1 col) */}
+          <div style={{
+            background: '#171717',
+            border: '1px solid #2A2A2A',
+            borderRadius: 10,
+            padding: '20px 24px',
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            <p style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 12 }}>
+              By country
+            </p>
+            {countries.length === 0 ? (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#707070', fontSize: 14 }}>
+                No data yet.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px', paddingBottom: 8, borderBottom: '1px solid #2A2A2A', marginBottom: 4 }}>
                   <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Country</span>
-                  <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Conversations</span>
+                  <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Chats</span>
                 </div>
                 {countries.map((c, i) => (
                   <div key={c.country} style={{
-                    display: 'grid', gridTemplateColumns: '1fr 80px',
-                    padding: '10px 0', alignItems: 'center',
+                    display: 'grid', gridTemplateColumns: '1fr 40px',
+                    padding: '9px 0', alignItems: 'center',
                     borderBottom: i < countries.length - 1 ? '1px solid #1E1E1E' : 'none',
                   }}>
                     <span style={{ fontSize: 13, color: '#F1F1F1' }}>{c.country}</span>
@@ -310,7 +294,8 @@ export default function OverviewPage() {
               </div>
             )}
           </div>
-        </>
+
+        </div>
       )}
     </div>
   )
