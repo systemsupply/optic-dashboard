@@ -217,8 +217,7 @@ export default function OverviewPage() {
             background: '#171717',
             border: '1px solid #2A2A2A',
             borderRadius: 10,
-            padding: '20px 24px',
-            overflow: 'hidden',
+            padding: '20px 24px 0',
           }}>
             <p style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 12 }}>
               Visitor locations
@@ -228,34 +227,32 @@ export default function OverviewPage() {
                 No location data yet.
               </div>
             ) : (
-              <div style={{ margin: '0 -24px', overflow: 'hidden' }}>
-                <ComposableMap
-                  projection="geoMercator"
-                  projectionConfig={{ scale: 140, center: [0, 20] }}
-                  style={{ width: '100%', height: 300, display: 'block' }}
-                >
-                  <Geographies geography={GEO_URL}>
-                    {({ geographies }) =>
-                      geographies.map(geo => (
-                        <Geography
-                          key={geo.rsmKey}
-                          geography={geo}
-                          style={{
-                            default: { fill: '#2A2A2A', stroke: '#111111', strokeWidth: 0.5, outline: 'none' },
-                            hover: { fill: '#2A2A2A', outline: 'none' },
-                            pressed: { fill: '#2A2A2A', outline: 'none' },
-                          }}
-                        />
-                      ))
-                    }
-                  </Geographies>
-                  {markers.map((m, i) => (
-                    <Marker key={i} coordinates={[m.lng, m.lat]}>
-                      <circle r={4} fill="#4ade80" fillOpacity={0.8} stroke="#111111" strokeWidth={1} />
-                    </Marker>
-                  ))}
-                </ComposableMap>
-              </div>
+              <ComposableMap
+                projection="geoMercator"
+                projectionConfig={{ scale: 120, center: [0, 10] }}
+                style={{ width: '100%', height: 320, display: 'block', marginLeft: -24, width: 'calc(100% + 48px)' } as React.CSSProperties}
+              >
+                <Geographies geography={GEO_URL}>
+                  {({ geographies }) =>
+                    geographies.map(geo => (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        style={{
+                          default: { fill: '#2A2A2A', stroke: '#111111', strokeWidth: 0.5, outline: 'none' },
+                          hover: { fill: '#2A2A2A', outline: 'none' },
+                          pressed: { fill: '#2A2A2A', outline: 'none' },
+                        }}
+                      />
+                    ))
+                  }
+                </Geographies>
+                {markers.map((m, i) => (
+                  <Marker key={i} coordinates={[m.lng, m.lat]}>
+                    <circle r={4} fill="#4ade80" fillOpacity={0.8} stroke="#111111" strokeWidth={1} />
+                  </Marker>
+                ))}
+              </ComposableMap>
             )}
           </div>
 
