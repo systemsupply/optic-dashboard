@@ -28,20 +28,22 @@ export default function TopQueriesPage() {
 
     const { data } = await supabase
       .from('conversations')
-      .select('visitor_query, had_results')
+      .select('messages')
       .eq('site_id', selectedSite.id)
       .gte('created_at', since.toISOString())
-      .not('visitor_query', 'is', null)
 
     if (!data) { setLoading(false); return }
 
     const map: Record<string, { count: number; found: number }> = {}
     data.forEach(row => {
-      const q = row.visitor_query?.toLowerCase().trim()
-      if (!q) return
-      if (!map[q]) map[q] = { count: 0, found: 0 }
-      map[q].count++
-      if (row.had_results) map[q].found++
+      const msgs: { query: string; had_results: boolean }[] = row.messages ?? []
+      msgs.forEach(msg => {
+        const q = msg.query?.toLowerCase().trim()
+        if (!q) return
+        if (!map[q]) map[q] = { count: 0, found: 0 }
+        map[q].count++
+        if (msg.had_results) map[q].found++
+      })
     })
 
     const sorted = Object.entries(map)

@@ -36,21 +36,23 @@ export default function DeadEndsPage() {
 
     const { data } = await supabase
       .from('conversations')
-      .select('visitor_query, created_at')
+      .select('messages, created_at')
       .eq('site_id', selectedSite.id)
-      .eq('had_results', false)
       .gte('created_at', since.toISOString())
-      .not('visitor_query', 'is', null)
 
     if (!data) { setLoading(false); return }
 
     const map: Record<string, { count: number; lastSeen: string }> = {}
     data.forEach(row => {
-      const q = row.visitor_query?.toLowerCase().trim()
-      if (!q) return
-      if (!map[q]) map[q] = { count: 0, lastSeen: row.created_at }
-      map[q].count++
-      if (row.created_at > map[q].lastSeen) map[q].lastSeen = row.created_at
+      const msgs: { query: string; had_results: boolean }[] = row.messages ?? []
+      msgs.forEach(msg => {
+        if (msg.had_results) return
+        const q = msg.query?.toLowerCase().trim()
+        if (!q) return
+        if (!map[q]) map[q] = { count: 0, lastSeen: row.created_at }
+        map[q].count++
+        if (row.created_at > map[q].lastSeen) map[q].lastSeen = row.created_at
+      })
     })
 
     const sorted = Object.entries(map)
