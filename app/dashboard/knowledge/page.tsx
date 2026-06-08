@@ -4,126 +4,143 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useSite } from '../components/SiteContext'
 
-interface KnowledgeEntry {
-  id: string
-  title: string | null
-  content: string | null
-  type: string | null
-  created_at: string
+interface KnowledgeContent {
+  name: string
+  text: string
+}
+
+interface KnowledgeFile {
+  site_name: string
+  generated_at: string
+  pages: { path: string }[]
+  content: KnowledgeContent[]
+  collections: string[]
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
-const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-  text:    { bg: '#1E3A2A', color: '#4ade80' },
-  faq:     { bg: '#1E2A3A', color: '#60a5fa' },
-  product: { bg: '#2A1E3A', color: '#c084fc' },
-  page:    { bg: '#3A2A1E', color: '#fb923c' },
-}
-
-function TypeBadge({ type }: { type: string | null }) {
-  const t = type ?? 'text'
-  const style = TYPE_COLORS[t] ?? { bg: '#2A2A2A', color: '#A0A0A0' }
-  return (
-    <span style={{
-      display: 'inline-block', padding: '2px 8px', borderRadius: 4,
-      fontSize: 11, fontWeight: 500, textTransform: 'capitalize',
-      background: style.bg, color: style.color,
-    }}>
-      {t}
-    </span>
-  )
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 export default function KnowledgePage() {
   const { selectedSite } = useSite()
-  const [entries, setEntries] = useState<KnowledgeEntry[]>([])
+  const [knowledge, setKnowledge] = useState<KnowledgeFile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
 
-  useEffect(() => { if (selectedSite) fetchEntries() }, [selectedSite])
+  useEffect(() => { if (selectedSite) fetchKnowledge() }, [selectedSite])
 
-  async function fetchEntries() {
+  async function fetchKnowledge() {
     if (!selectedSite) return
     setLoading(true)
-    const { data } = await supabase
-      .from('knowledge_entries')
-      .select('id, title, content, type, created_at')
-      .eq('site_id', selectedSite.id)
-      .order('created_at', { ascending: false })
-    setEntries(data ?? [])
+    setError(null)
+
+    const { data, error } = await supabase.storage
+      .from('knowledge')
+      .download(`${selectedSite.id}/knowledge.json`)
+
+    if (error || !data) {
+      setError('No knowledge file found. Run Analyse in the Optic plugin to generate one.')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const text = await data.text()
+      setKnowledge(JSON.parse(text))
+    } catch {
+      setError('Could not parse knowledge file.')
+    }
+
     setLoading(false)
   }
 
-  async function deleteEntry(id: string) {
-    if (!confirm('Delete this knowledge entry?')) return
-    setDeleting(id)
-    await supabase.from('knowledge_entries').delete().eq('id', id)
-    setEntries(prev => prev.filter(e => e.id !== id))
-    setDeleting(null)
-  }
+  const filtered = knowledge?.content.filter(entry =>
+    !search || entry.text.toLowerCase().includes(search.toLowerCase()) || entry.name.toLowerCase().includes(search.toLowerCase())
+  ) ?? []
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Knowledge Base</h1>
           <p style={{ fontSize: 13, color: '#707070', marginTop: 4 }}>
-            Content added via the Optic plugin. {entries.length > 0 && `${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}.`}
+            {knowledge ? `Last generated ${formatDate(knowledge.generated_at)}` : 'Content read by Optic from your site.'}
           </p>
         </div>
+        {knowledge && (
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: '8px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 18, fontWeight: 500, color: '#F1F1F1' }}>{knowledge.pages.length}</div>
+              <div style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pages</div>
+            </div>
+            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: '8px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 18, fontWeight: 500, color: '#F1F1F1' }}>{knowledge.content.length}</div>
+              <div style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Entries</div>
+            </div>
+            {knowledge.collections.length > 0 && (
+              <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: '8px 16px', textAlign: 'center' }}>
+                <div style={{ fontSize: 18, fontWeight: 500, color: '#F1F1F1' }}>{knowledge.collections.length}</div>
+                <div style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Collections</div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {loading ? (
         <div style={{ color: '#707070', fontSize: 14 }}>Loading…</div>
-      ) : entries.length === 0 ? (
+      ) : error ? (
         <div style={{
           background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10,
           padding: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
         }}>
-          <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>No knowledge entries yet.</p>
-          <p style={{ color: '#707070', fontSize: 13 }}>Add content from the Optic plugin in Framer.</p>
+          <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>No knowledge base yet.</p>
+          <p style={{ color: '#707070', fontSize: 13 }}>{error}</p>
         </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {entries.map(entry => (
-            <div key={entry.id} style={{
-              background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10,
-              padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: 16,
-            }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                  <TypeBadge type={entry.type} />
-                  <span style={{ fontSize: 12, color: '#707070' }}>{formatDate(entry.created_at)}</span>
-                </div>
-                {entry.title && (
-                  <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {entry.title}
-                  </p>
-                )}
-                {entry.content && (
-                  <p style={{ fontSize: 13, color: '#707070', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                    {entry.content}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={() => deleteEntry(entry.id)}
-                disabled={deleting === entry.id}
-                style={{
-                  background: 'transparent', border: '1px solid #2A2A2A', borderRadius: 6,
-                  padding: '5px 12px', fontSize: 12, color: deleting === entry.id ? '#3A3A3A' : '#E75C5C',
-                  cursor: deleting === entry.id ? 'not-allowed' : 'pointer', flexShrink: 0,
-                  transition: 'border-color 0.1s',
-                }}
-              >
-                {deleting === entry.id ? 'Deleting…' : 'Delete'}
-              </button>
+      ) : knowledge && (
+        <>
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search entries…"
+            style={{
+              background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8,
+              padding: '10px 16px', fontSize: 13, color: '#F1F1F1', outline: 'none', width: '100%',
+            }}
+          />
+
+          <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
+              {['Source', 'Content'].map(h => (
+                <span key={h} style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</span>
+              ))}
             </div>
-          ))}
-        </div>
+
+            {filtered.length === 0 ? (
+              <div style={{ padding: 32, textAlign: 'center', color: '#707070', fontSize: 13 }}>No entries match your search.</div>
+            ) : filtered.map((entry, i) => (
+              <div key={i} style={{
+                display: 'grid', gridTemplateColumns: '160px 1fr',
+                padding: '12px 20px', alignItems: 'start',
+                borderBottom: i < filtered.length - 1 ? '1px solid #1E1E1E' : 'none',
+              }}>
+                <span style={{ fontSize: 12, color: '#707070', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {entry.name}
+                </span>
+                <span style={{ fontSize: 13, color: '#A0A0A0', lineHeight: 1.5 }}>
+                  {entry.text}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {filtered.length > 0 && (
+            <p style={{ fontSize: 12, color: '#3A3A3A' }}>
+              {filtered.length} of {knowledge.content.length} entries
+            </p>
+          )}
+        </>
       )}
     </div>
   )
