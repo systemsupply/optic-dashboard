@@ -153,18 +153,13 @@ export default function SettingsPage() {
             Upgrade
           </a>
         </div>
-        <div style={{ padding: '16px 20px' }}>
-          <p style={{ fontSize: 12, color: '#707070', marginBottom: 3 }}>Sites</p>
-          <p style={{ fontSize: 14, color: '#F1F1F1' }}>
-            {sites.length} of {limit === Infinity ? 'unlimited' : limit} site{limit === 1 ? '' : 's'} used
-          </p>
-        </div>
       </div>
 
       {/* Sites */}
       <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>Sites</p>
+          <p style={{ fontSize: 12, color: '#707070' }}>{sites.length} of {limit === Infinity ? 'unlimited' : limit} used</p>
         </div>
         {sites.map((site, i) => (
           <div key={site.id} style={{
