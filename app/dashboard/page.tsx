@@ -244,7 +244,7 @@ export default function OverviewPage() {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={chartData} margin={{ top: 0, right: 0, bottom: 10, left: 0 }}>
+                <LineChart data={chartData} margin={{ top: 0, right: 24, bottom: 10, left: 0 }}>
                   <XAxis dataKey="date" tick={{ fill: '#707070', fontSize: 12 }} axisLine={false} tickLine={false} interval={range === 7 ? 0 : 4} tickMargin={10} />
                   <YAxis hide domain={[0, (dataMax: number) => Math.max(dataMax, 4)]} tickCount={5} />
                   <Tooltip content={<CustomTooltip />} />
