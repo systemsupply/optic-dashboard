@@ -195,7 +195,7 @@ export default function Sidebar() {
           }}
         >
           <span style={{ flexShrink: 0, display: 'flex' }}>
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6" stroke="currentColor" strokeWidth="1.3"/><path d="M7.5 5a1.5 1.5 0 1 1 0 3v1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><circle cx="7.5" cy="11" r="0.75" fill="currentColor"/></svg>
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2.5C2 1.67 2.67 1 3.5 1h8c.83 0 1.5.67 1.5 1.5v7c0 .83-.67 1.5-1.5 1.5H5l-3 2.5V2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/><path d="M7.5 4.5a1.25 1.25 0 1 1 0 2.5V8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/><circle cx="7.5" cy="9.5" r="0.65" fill="currentColor"/></svg>
           </span>
           Support
         </button>
