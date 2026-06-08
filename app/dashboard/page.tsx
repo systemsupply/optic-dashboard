@@ -145,12 +145,12 @@ export default function OverviewPage() {
     const locRows = locData ?? []
     setMarkers(locRows.map(r => ({ lat: r.latitude!, lng: r.longitude!, city: r.city, country: r.country })))
 
-    const countryCounts: Record<string, number> = {}
+    const locCountryCounts: Record<string, number> = {}
     locRows.forEach(r => {
-      if (r.country) countryCounts[r.country] = (countryCounts[r.country] || 0) + 1
+      if (r.country) locCountryCounts[r.country] = (locCountryCounts[r.country] || 0) + 1
     })
     setCountries(
-      Object.entries(countryCounts)
+      Object.entries(locCountryCounts)
         .map(([country, count]) => ({ country, count }))
         .sort((a, b) => b.count - a.count)
     )
