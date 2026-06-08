@@ -99,12 +99,8 @@ export default function ConversationsPage() {
             const msgCount = row.message_count ?? row.messages?.length ?? 1
             const isExpanded = expanded === row.id
 
-            // Derive result status from individual messages when available
             const msgs = row.messages ?? []
-            const allFound = msgs.length > 0 && msgs.every(m => m.had_results)
-            const allDead = msgs.length > 0 && msgs.every(m => !m.had_results)
-            const statusColor = allFound ? '#4ade80' : allDead ? '#E75C5C' : '#facc15'
-            const statusLabel = allFound ? 'Found' : allDead ? 'Dead end' : 'Mixed'
+            const deadEndCount = msgs.filter(m => !m.had_results).length
 
             // Location: "City, CC" or fallback
             const location = row.city && row.country
@@ -136,9 +132,8 @@ export default function ConversationsPage() {
                   </div>
                   <span style={{ fontSize: 13, color: '#707070' }}>{timeAgo(row.created_at)}</span>
                   <span style={{ fontSize: 13, color: '#A0A0A0' }}>{location}</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: statusColor, fontWeight: 500 }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: statusColor, flexShrink: 0 }} />
-                    {statusLabel}
+                  <span style={{ fontSize: 12, fontWeight: 500, color: deadEndCount > 0 ? '#E75C5C' : '#3A3A3A' }}>
+                    {deadEndCount > 0 ? `${deadEndCount} dead end${deadEndCount > 1 ? 's' : ''}` : '—'}
                   </span>
                 </div>
 
