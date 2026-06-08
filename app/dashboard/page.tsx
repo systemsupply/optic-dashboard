@@ -194,7 +194,7 @@ export default function OverviewPage() {
               style={{
                 padding: '5px 14px',
                 borderRadius: 6,
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: 500,
                 border: 'none',
                 cursor: 'pointer',
@@ -217,7 +217,7 @@ export default function OverviewPage() {
           padding: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
         }}>
           <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>No sites connected yet.</p>
-          <p style={{ color: '#707070', fontSize: 13 }}>Install the Optic plugin in Framer to get started.</p>
+          <p style={{ color: '#707070', fontSize: 14 }}>Install the Optic plugin in Framer to get started.</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
@@ -246,8 +246,8 @@ export default function OverviewPage() {
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={chartData} margin={{ top: 0, right: 0, bottom: 10, left: -20 }}>
                   <CartesianGrid stroke="#2A2A2A" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fill: '#707070', fontSize: 11 }} axisLine={false} tickLine={false} interval={range === 7 ? 0 : 4} tickMargin={10} />
-                  <YAxis tick={{ fill: '#707070', fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <XAxis dataKey="date" tick={{ fill: '#707070', fontSize: 12 }} axisLine={false} tickLine={false} interval={range === 7 ? 0 : 4} tickMargin={10} />
+                  <YAxis tick={{ fill: '#707070', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
                   <Tooltip content={<CustomTooltip />} />
                   <Line type="linear" dataKey="count" stroke="#4ade80" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#4ade80', strokeWidth: 0 }} />
                 </LineChart>
@@ -326,8 +326,8 @@ export default function OverviewPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px', paddingBottom: 8, borderBottom: '1px solid #2A2A2A', marginBottom: 4 }}>
-                  <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Country</span>
-                  <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Chats</span>
+                  <span style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Country</span>
+                  <span style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Chats</span>
                 </div>
                 {countries.map((c, i) => (
                   <div key={c.country} style={{
@@ -335,8 +335,8 @@ export default function OverviewPage() {
                     padding: '9px 0', alignItems: 'center',
                     borderBottom: i < countries.length - 1 ? '1px solid #1E1E1E' : 'none',
                   }}>
-                    <span style={{ fontSize: 13, color: '#F1F1F1' }}>{c.country}</span>
-                    <span style={{ fontSize: 13, color: '#A0A0A0', textAlign: 'right' }}>{c.count}</span>
+                    <span style={{ fontSize: 14, color: '#F1F1F1' }}>{c.country}</span>
+                    <span style={{ fontSize: 14, color: '#A0A0A0', textAlign: 'right' }}>{c.count}</span>
                   </div>
                 ))}
               </div>

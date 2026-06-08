@@ -76,7 +76,7 @@ export default function KnowledgePage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
         <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Knowledge Base</h1>
-        <p style={{ fontSize: 13, color: '#707070', marginTop: 4 }}>
+        <p style={{ fontSize: 14, color: '#707070', marginTop: 4 }}>
           {knowledge ? `Last generated ${formatDate(knowledge.generated_at)}` : 'Content read by Optic from your site.'}
         </p>
       </div>
@@ -93,7 +93,7 @@ export default function KnowledgePage() {
               padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 6,
             }}>
               <span style={{ fontSize: 12, color: '#707070', letterSpacing: '0.02em', textTransform: 'uppercase' }}>{label}</span>
-              <span style={{ fontSize: 28, fontWeight: 600, color: '#F1F1F1', letterSpacing: '-0.5px', lineHeight: 1 }}>{value}</span>
+              <span style={{ fontSize: 56, fontWeight: 600, color: '#F1F1F1', letterSpacing: '-0.5px', lineHeight: 1 }}>{value}</span>
             </div>
           ))}
         </div>
@@ -108,7 +108,7 @@ export default function KnowledgePage() {
           padding: 48, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
         }}>
           <p style={{ color: '#F1F1F1', fontSize: 14, fontWeight: 500 }}>No knowledge base yet.</p>
-          <p style={{ color: '#707070', fontSize: 13 }}>{error}</p>
+          <p style={{ color: '#707070', fontSize: 14 }}>{error}</p>
         </div>
       ) : knowledge && (
         <>
@@ -118,23 +118,23 @@ export default function KnowledgePage() {
             placeholder="Search entries…"
             style={{
               background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8,
-              padding: '10px 16px', fontSize: 13, color: '#F1F1F1', outline: 'none', width: '100%',
+              padding: '10px 16px', fontSize: 14, color: '#F1F1F1', outline: 'none', width: '100%',
             }}
           />
 
           {filtered.length === 0 ? (
-            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, padding: 32, textAlign: 'center', color: '#707070', fontSize: 13 }}>
+            <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, padding: 32, textAlign: 'center', color: '#707070', fontSize: 14 }}>
               No entries match your search.
             </div>
           ) : Object.entries(grouped).map(([pagePath, entries]) => (
             <div key={pagePath} style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
               <div style={{ padding: '12px 20px', borderBottom: '1px solid #2A2A2A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#F1F1F1' }}>{pagePath}</span>
-                <span style={{ fontSize: 11, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#F1F1F1' }}>{pagePath}</span>
+                <span style={{ fontSize: 12, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', padding: '8px 20px', borderBottom: '1px solid #222' }}>
                 {['Source', 'Content'].map(h => (
-                  <span key={h} style={{ fontSize: 11, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</span>
+                  <span key={h} style={{ fontSize: 12, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</span>
                 ))}
               </div>
               {entries.map((entry, i) => (
@@ -146,7 +146,7 @@ export default function KnowledgePage() {
                   <span style={{ fontSize: 12, color: '#606060', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {entry.name}
                   </span>
-                  <span style={{ fontSize: 13, color: '#A0A0A0', lineHeight: 1.5 }}>
+                  <span style={{ fontSize: 14, color: '#A0A0A0', lineHeight: 1.5 }}>
                     {entry.text}
                   </span>
                 </div>

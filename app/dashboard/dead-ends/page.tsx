@@ -71,12 +71,12 @@ export default function DeadEndsPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <h1 style={{ fontSize: 22, fontWeight: 500, color: '#F1F1F1', letterSpacing: '-0.3px' }}>Dead Ends</h1>
-          <p style={{ fontSize: 13, color: '#707070' }}>Queries where Optic found no matching content.</p>
+          <p style={{ fontSize: 14, color: '#707070' }}>Queries where Optic found no matching content.</p>
         </div>
         <div style={{ display: 'flex', gap: 4, background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
           {([7, 30] as const).map(r => (
             <button key={r} onClick={() => setRange(r)} style={{
-              padding: '5px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+              padding: '5px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500,
               border: 'none', cursor: 'pointer',
               background: range === r ? '#2A2A2A' : 'transparent',
               color: range === r ? '#F1F1F1' : '#707070',
@@ -88,7 +88,7 @@ export default function DeadEndsPage() {
       <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 120px', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
           {['Query', 'Times', 'Last seen'].map(h => (
-            <span key={h} style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: h !== 'Query' ? 'right' : 'left' }}>{h}</span>
+            <span key={h} style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: h !== 'Query' ? 'right' : 'left' }}>{h}</span>
           ))}
         </div>
 
@@ -97,7 +97,7 @@ export default function DeadEndsPage() {
         ) : rows.length === 0 ? (
           <div style={{ padding: 40, textAlign: 'center' }}>
             <p style={{ color: '#4ade80', fontSize: 14, fontWeight: 500 }}>No dead ends in this period.</p>
-            <p style={{ color: '#707070', fontSize: 13, marginTop: 6 }}>Optic found results for every query.</p>
+            <p style={{ color: '#707070', fontSize: 14, marginTop: 6 }}>Optic found results for every query.</p>
           </div>
         ) : rows.map((row, i) => (
           <div key={row.query} style={{
@@ -111,13 +111,13 @@ export default function DeadEndsPage() {
               width: `${(row.count / maxCount) * 60}%`,
               background: '#E75C5C08',
             }} />
-            <span style={{ fontSize: 13, color: '#F1F1F1', position: 'relative', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 16, color: '#F1F1F1', position: 'relative', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {row.query}
             </span>
-            <span style={{ fontSize: 13, color: '#E75C5C', textAlign: 'right', position: 'relative', fontWeight: 500 }}>
+            <span style={{ fontSize: 14, color: '#E75C5C', textAlign: 'right', position: 'relative', fontWeight: 500 }}>
               {row.count}×
             </span>
-            <span style={{ fontSize: 13, color: '#707070', textAlign: 'right', position: 'relative' }}>
+            <span style={{ fontSize: 14, color: '#707070', textAlign: 'right', position: 'relative' }}>
               {timeAgo(row.lastSeen)}
             </span>
           </div>

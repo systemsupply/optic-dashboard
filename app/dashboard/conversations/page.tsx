@@ -74,7 +74,7 @@ export default function ConversationsPage() {
               key={f}
               onClick={() => setFilter(f)}
               style={{
-                padding: '5px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+                padding: '5px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500,
                 border: 'none', cursor: 'pointer',
                 background: filter === f ? '#2A2A2A' : 'transparent',
                 color: filter === f ? '#F1F1F1' : '#707070',
@@ -121,17 +121,17 @@ export default function ConversationsPage() {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                    <span style={{ fontSize: 13, color: '#F1F1F1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 16, color: '#F1F1F1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {firstQuery}
                     </span>
                     {msgCount > 1 && (
-                      <span style={{ fontSize: 11, color: '#707070', background: '#2A2A2A', borderRadius: 4, padding: '2px 6px', flexShrink: 0 }}>
+                      <span style={{ fontSize: 12, color: '#707070', background: '#2A2A2A', borderRadius: 4, padding: '2px 6px', flexShrink: 0 }}>
                         {msgCount} messages
                       </span>
                     )}
                   </div>
-                  <span style={{ fontSize: 13, color: '#707070' }}>{timeAgo(row.created_at)}</span>
-                  <span style={{ fontSize: 13, color: '#A0A0A0' }}>{location}</span>
+                  <span style={{ fontSize: 14, color: '#707070' }}>{timeAgo(row.created_at)}</span>
+                  <span style={{ fontSize: 14, color: '#A0A0A0' }}>{location}</span>
                   <span style={{ fontSize: 12, fontWeight: 500, color: deadEndCount > 0 ? '#E75C5C' : '#3A3A3A' }}>
                     {deadEndCount > 0 ? `${deadEndCount} dead end${deadEndCount > 1 ? 's' : ''}` : '—'}
                   </span>
@@ -142,13 +142,13 @@ export default function ConversationsPage() {
                   <div style={{ borderTop: '1px solid #2A2A2A', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
                     {row.messages.map((msg, mi) => (
                       <div key={mi} style={{ display: 'flex', flexDirection: 'column', gap: 5, paddingLeft: 12, borderLeft: `2px solid ${msg.had_results ? '#2A2A2A' : '#E75C5C33'}` }}>
-                        <span style={{ fontSize: 13, color: '#F1F1F1', fontWeight: 500 }}>{msg.query}</span>
-                        <span style={{ fontSize: 13, color: '#707070' }}>
+                        <span style={{ fontSize: 16, color: '#F1F1F1', fontWeight: 500 }}>{msg.query}</span>
+                        <span style={{ fontSize: 14, color: '#707070' }}>
                           {msg.response?.type === 'text' || msg.response?.type === 'no_results'
                             ? msg.response.answer
                             : msg.response?.intro ?? '—'}
                         </span>
-                        <span style={{ fontSize: 11, color: msg.had_results ? '#4ade80' : '#E75C5C' }}>
+                        <span style={{ fontSize: 12, color: msg.had_results ? '#4ade80' : '#E75C5C' }}>
                           {msg.had_results ? 'Results found' : 'Dead end'}
                         </span>
                       </div>
@@ -163,14 +163,14 @@ export default function ConversationsPage() {
 
       {totalPages > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 13, color: '#707070' }}>{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total}</span>
+          <span style={{ fontSize: 14, color: '#707070' }}>{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total}</span>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
-              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 13, border: '1px solid #2A2A2A', background: '#171717', color: page === 0 ? '#3A3A3A' : '#A0A0A0', cursor: page === 0 ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 14, border: '1px solid #2A2A2A', background: '#171717', color: page === 0 ? '#3A3A3A' : '#A0A0A0', cursor: page === 0 ? 'not-allowed' : 'pointer' }}>
               Previous
             </button>
             <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 13, border: '1px solid #2A2A2A', background: '#171717', color: page >= totalPages - 1 ? '#3A3A3A' : '#A0A0A0', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer' }}>
+              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 14, border: '1px solid #2A2A2A', background: '#171717', color: page >= totalPages - 1 ? '#3A3A3A' : '#A0A0A0', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer' }}>
               Next
             </button>
           </div>

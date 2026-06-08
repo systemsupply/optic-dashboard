@@ -69,7 +69,7 @@ export default function LocationsPage() {
         <>
           {/* World map */}
           <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden', padding: '8px 0 0' }}>
-            <p style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0 20px 12px' }}>
+            <p style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '0 20px 12px' }}>
               Visitor locations
             </p>
             {markers.length === 0 ? (
@@ -110,8 +110,8 @@ export default function LocationsPage() {
           {countries.length > 0 && (
             <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
-                <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Country</span>
-                <span style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Conversations</span>
+                <span style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Country</span>
+                <span style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'right' }}>Conversations</span>
               </div>
               {countries.map((c, i) => {
                 const max = countries[0].count
@@ -129,8 +129,8 @@ export default function LocationsPage() {
                       background: '#4ade8010',
                       borderRadius: i === 0 ? '10px 0 0 0' : 0,
                     }} />
-                    <span style={{ fontSize: 13, color: '#F1F1F1', position: 'relative' }}>{c.country}</span>
-                    <span style={{ fontSize: 13, color: '#A0A0A0', textAlign: 'right', position: 'relative' }}>{c.count}</span>
+                    <span style={{ fontSize: 14, color: '#F1F1F1', position: 'relative' }}>{c.country}</span>
+                    <span style={{ fontSize: 14, color: '#A0A0A0', textAlign: 'right', position: 'relative' }}>{c.count}</span>
                   </div>
                 )
               })}

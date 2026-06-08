@@ -69,7 +69,7 @@ export default function TopQueriesPage() {
         <div style={{ display: 'flex', gap: 4, background: '#171717', border: '1px solid #2A2A2A', borderRadius: 8, padding: 3 }}>
           {([7, 30] as const).map(r => (
             <button key={r} onClick={() => setRange(r)} style={{
-              padding: '5px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+              padding: '5px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500,
               border: 'none', cursor: 'pointer',
               background: range === r ? '#2A2A2A' : 'transparent',
               color: range === r ? '#F1F1F1' : '#707070',
@@ -81,7 +81,7 @@ export default function TopQueriesPage() {
       <div style={{ background: '#171717', border: '1px solid #2A2A2A', borderRadius: 10, overflow: 'hidden' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px', padding: '10px 20px', borderBottom: '1px solid #2A2A2A' }}>
           {['Query', 'Count', 'Found'].map(h => (
-            <span key={h} style={{ fontSize: 11, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: h !== 'Query' ? 'right' : 'left' }}>{h}</span>
+            <span key={h} style={{ fontSize: 12, color: '#707070', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: h !== 'Query' ? 'right' : 'left' }}>{h}</span>
           ))}
         </div>
 
@@ -102,10 +102,10 @@ export default function TopQueriesPage() {
               width: `${(row.count / maxCount) * 60}%`,
               background: '#4ade8008',
             }} />
-            <span style={{ fontSize: 13, color: '#F1F1F1', position: 'relative', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 16, color: '#F1F1F1', position: 'relative', paddingRight: 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {row.query}
             </span>
-            <span style={{ fontSize: 13, color: '#A0A0A0', textAlign: 'right', position: 'relative' }}>{row.count}</span>
+            <span style={{ fontSize: 14, color: '#A0A0A0', textAlign: 'right', position: 'relative' }}>{row.count}</span>
             <span style={{
               fontSize: 12, fontWeight: 500, textAlign: 'right', position: 'relative',
               color: row.rate >= 70 ? '#4ade80' : row.rate >= 40 ? '#facc15' : '#E75C5C',

@@ -136,7 +136,7 @@ export default function SettingsPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <p style={{ fontSize: 14, color: '#F1F1F1', fontWeight: 500 }}>{PLAN_LABELS[plan] ?? plan} — {PLAN_PRICES[plan] ?? ''}</p>
               {inTrial && (
-                <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#1E3A2A', color: '#4ade80', fontWeight: 500 }}>
+                <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 4, background: '#1E3A2A', color: '#4ade80', fontWeight: 500 }}>
                   Trial — {trialDays}d left
                 </span>
               )}
@@ -267,7 +267,7 @@ export default function SettingsPage() {
         <div style={{ padding: '20px' }}>
           <p style={{ fontSize: 14, color: '#F1F1F1', marginBottom: 6 }}>Make your site readable by AI</p>
           <p style={{ fontSize: 12, color: '#707070', marginBottom: 16, lineHeight: 1.6 }}>
-            Optic has generated an <code style={{ background: '#2A2A2A', padding: '1px 5px', borderRadius: 3, fontSize: 11 }}>llms.txt</code> file for your site. Upload it to Framer to make your site instantly readable by AI agents like ChatGPT, Perplexity, and Claude — no crawling required.
+            Optic has generated an <code style={{ background: '#2A2A2A', padding: '1px 5px', borderRadius: 3, fontSize: 12 }}>llms.txt</code> file for your site. Upload it to Framer to make your site instantly readable by AI agents like ChatGPT, Perplexity, and Claude — no crawling required.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <button
