@@ -63,14 +63,24 @@ export default function Sidebar() {
     if (!message.trim()) return
     setSending(true)
     const { data: { user } } = await supabase.auth.getUser()
-    window.location.href = `mailto:support@optic.sh?subject=Support request&body=${encodeURIComponent(message + '\n\n---\n' + (user?.email ?? ''))}`
-    setSending(false)
-    setSent(true)
-    setTimeout(() => {
-      setSent(false)
-      setMessage('')
-      closeSupport()
-    }, 1500)
+    try {
+      const res = await fetch('/api/support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, userEmail: user?.email }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      setSent(true)
+      setTimeout(() => {
+        setSent(false)
+        setMessage('')
+        closeSupport()
+      }, 1500)
+    } catch {
+      // silently fail for now — could add error state later
+    } finally {
+      setSending(false)
+    }
   }
 
   const selectedIndex = sites.findIndex(s => s.id === selectedSite?.id)
