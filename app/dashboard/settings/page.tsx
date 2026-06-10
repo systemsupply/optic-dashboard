@@ -143,7 +143,7 @@ export default function SettingsPage() {
             </div>
           </div>
           <a
-            href="https://app.optic.sh/upgrade"
+            href="/upgrade"
             style={{
               padding: '7px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500,
               border: '1px solid #2A2A2A', background: 'transparent', color: '#A0A0A0',

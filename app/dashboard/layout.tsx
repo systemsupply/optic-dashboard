@@ -1,5 +1,5 @@
-import Sidebar from '@/components/Sidebar'
 import { SiteProvider } from './components/SiteContext'
+import PlanGate from './components/PlanGate'
 
 export default function DashboardLayout({
   children,
@@ -8,12 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <SiteProvider>
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#0E0E0E' }}>
-        <Sidebar />
-        <main style={{ flex: 1, padding: '40px 48px', overflowY: 'scroll', height: '100vh' }}>
-          {children}
-        </main>
-      </div>
+      <PlanGate>{children}</PlanGate>
     </SiteProvider>
   )
 }
