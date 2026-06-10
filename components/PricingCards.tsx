@@ -4,12 +4,25 @@ import { useEffect, useState } from 'react'
 import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
 
+type PolarEmbed = {
+  create: (url: string, options: { theme?: string }) => Promise<unknown>
+}
+
 declare global {
   interface Window {
-    PolarEmbedCheckout?: {
-      create: (url: string, options: { theme?: string }) => Promise<unknown>
-    }
+    PolarEmbedCheckout?: PolarEmbed & { PolarEmbedCheckout?: PolarEmbed }
   }
+}
+
+// The jsdelivr global build can expose the helper either directly on
+// window.PolarEmbedCheckout, or nested as window.PolarEmbedCheckout.PolarEmbedCheckout
+// depending on how the UMD bundle wraps the module exports. Check both.
+function getPolarEmbed(): PolarEmbed | null {
+  const w = window.PolarEmbedCheckout
+  if (!w) return null
+  if (typeof w.create === 'function') return w
+  if (w.PolarEmbedCheckout && typeof w.PolarEmbedCheckout.create === 'function') return w.PolarEmbedCheckout
+  return null
 }
 
 const PRODUCT_IDS: Record<string, string> = {
@@ -84,9 +97,11 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
       if (!res.ok) throw new Error('Failed to create checkout')
       const { url } = await res.json()
 
-      if (window.PolarEmbedCheckout && url) {
-        await window.PolarEmbedCheckout.create(url, { theme: 'dark' })
+      const embed = getPolarEmbed()
+      if (embed && url) {
+        await embed.create(url, { theme: 'dark' })
       } else if (url) {
+        console.warn('PolarEmbedCheckout not available on window, falling back to redirect', window.PolarEmbedCheckout)
         window.location.href = url
       }
     } catch (err) {
