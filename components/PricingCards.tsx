@@ -4,6 +4,14 @@ import { useEffect, useState } from 'react'
 import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
 
+declare global {
+  interface Window {
+    PolarEmbedCheckout?: {
+      create: (url: string, options: { theme?: string }) => Promise<unknown>
+    }
+  }
+}
+
 const PRODUCT_IDS: Record<string, string> = {
   pro: 'ce334a96-7bbe-4f88-9bc4-0c08384757a1',
   max: '6db25977-65ab-4e58-bd2e-fdc55e18bb86',
@@ -54,6 +62,7 @@ const PLANS = [
 export default function PricingCards({ currentPlan }: { currentPlan?: string }) {
   const [userId, setUserId] = useState<string | null>(null)
   const [email, setEmail] = useState<string | null>(null)
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -62,20 +71,37 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
     })
   }, [])
 
-  function checkoutUrl(planKey: string) {
-    const productId = PRODUCT_IDS[planKey]
-    const params = new URLSearchParams({ products: productId })
-    if (userId) params.set('customerExternalId', userId)
-    if (email) params.set('customerEmail', email)
-    return `/api/checkout?${params.toString()}`
+  async function openCheckout(planKey: string) {
+    if (loadingPlan) return
+    setLoadingPlan(planKey)
+    try {
+      const productId = PRODUCT_IDS[planKey]
+      const params = new URLSearchParams({ products: productId })
+      if (userId) params.set('customerExternalId', userId)
+      if (email) params.set('customerEmail', email)
+
+      const res = await fetch(`/api/checkout?${params.toString()}`)
+      if (!res.ok) throw new Error('Failed to create checkout')
+      const { url } = await res.json()
+
+      if (window.PolarEmbedCheckout && url) {
+        await window.PolarEmbedCheckout.create(url, { theme: 'dark' })
+      } else if (url) {
+        window.location.href = url
+      }
+    } catch (err) {
+      console.error('Checkout error:', err)
+      alert('Could not start checkout. Please try again.')
+    } finally {
+      setLoadingPlan(null)
+    }
   }
 
   return (
     <>
     <Script
       src="https://cdn.jsdelivr.net/npm/@polar-sh/checkout@0.3.0/dist/embed.global.js"
-      strategy="lazyOnload"
-      data-auto-init
+      strategy="afterInteractive"
     />
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
       {PLANS.map(plan => {
@@ -128,18 +154,17 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
                 Free
               </div>
             ) : (
-              <a
-                href={checkoutUrl(plan.key)}
-                data-polar-checkout
-                data-polar-checkout-theme="dark"
+              <button
+                onClick={() => openCheckout(plan.key)}
+                disabled={loadingPlan === plan.key}
                 style={{
                   padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500,
                   border: 'none', background: '#F1F1F1', color: '#131313',
-                  textAlign: 'center', textDecoration: 'none',
+                  textAlign: 'center', cursor: loadingPlan === plan.key ? 'not-allowed' : 'pointer',
                 }}
               >
-                Upgrade
-              </a>
+                {loadingPlan === plan.key ? 'Loading…' : 'Upgrade'}
+              </button>
             )}
           </div>
         )
