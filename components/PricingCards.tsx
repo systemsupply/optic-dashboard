@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
 
 const PRODUCT_IDS: Record<string, string> = {
@@ -70,6 +71,12 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
   }
 
   return (
+    <>
+    <Script
+      src="https://cdn.jsdelivr.net/npm/@polar-sh/checkout@0.3.0/dist/embed.global.js"
+      strategy="lazyOnload"
+      data-auto-init
+    />
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
       {PLANS.map(plan => {
         const isCurrent = currentPlan === plan.key
@@ -123,6 +130,8 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
             ) : (
               <a
                 href={checkoutUrl(plan.key)}
+                data-polar-checkout
+                data-polar-checkout-theme="dark"
                 style={{
                   padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500,
                   border: 'none', background: '#F1F1F1', color: '#131313',
@@ -136,5 +145,6 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
         )
       })}
     </div>
+    </>
   )
 }
