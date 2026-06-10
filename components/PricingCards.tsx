@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Script from 'next/script'
 import { supabase } from '@/lib/supabase'
 
 type PolarEmbed = {
@@ -14,6 +13,8 @@ declare global {
   }
 }
 
+const POLAR_EMBED_SRC = 'https://cdn.jsdelivr.net/npm/@polar-sh/checkout@0.3.0/dist/embed.global.js'
+
 // The jsdelivr global build can expose the helper either directly on
 // window.PolarEmbedCheckout, or nested as window.PolarEmbedCheckout.PolarEmbedCheckout
 // depending on how the UMD bundle wraps the module exports. Check both.
@@ -23,6 +24,35 @@ function getPolarEmbed(): PolarEmbed | null {
   if (typeof w.create === 'function') return w
   if (w.PolarEmbedCheckout && typeof w.PolarEmbedCheckout.create === 'function') return w.PolarEmbedCheckout
   return null
+}
+
+// Ensures the Polar embed script is loaded before we try to use it, instead
+// of relying on Next's <Script> timing (which may not have run yet by the
+// time the user clicks Upgrade).
+function loadPolarEmbed(): Promise<PolarEmbed | null> {
+  return new Promise(resolve => {
+    const existing = getPolarEmbed()
+    if (existing) {
+      resolve(existing)
+      return
+    }
+
+    const existingScript = document.querySelector(`script[src="${POLAR_EMBED_SRC}"]`) as HTMLScriptElement | null
+    const script = existingScript ?? document.createElement('script')
+    if (!existingScript) {
+      script.src = POLAR_EMBED_SRC
+      document.head.appendChild(script)
+    }
+
+    script.addEventListener('load', () => resolve(getPolarEmbed()))
+    script.addEventListener('error', () => resolve(null))
+
+    // In case the script already finished loading between our checks
+    if (existingScript) {
+      const found = getPolarEmbed()
+      if (found) resolve(found)
+    }
+  })
 }
 
 const PRODUCT_IDS: Record<string, string> = {
@@ -97,11 +127,11 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
       if (!res.ok) throw new Error('Failed to create checkout')
       const { url } = await res.json()
 
-      const embed = getPolarEmbed()
+      const embed = await loadPolarEmbed()
       if (embed && url) {
         await embed.create(url, { theme: 'dark' })
       } else if (url) {
-        console.warn('PolarEmbedCheckout not available on window, falling back to redirect', window.PolarEmbedCheckout)
+        console.warn('PolarEmbedCheckout not available, falling back to redirect', window.PolarEmbedCheckout)
         window.location.href = url
       }
     } catch (err) {
@@ -113,11 +143,6 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
   }
 
   return (
-    <>
-    <Script
-      src="https://cdn.jsdelivr.net/npm/@polar-sh/checkout@0.3.0/dist/embed.global.js"
-      strategy="afterInteractive"
-    />
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
       {PLANS.map(plan => {
         const isCurrent = currentPlan === plan.key
@@ -185,6 +210,5 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
         )
       })}
     </div>
-    </>
   )
 }
