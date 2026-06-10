@@ -14,28 +14,18 @@ const POLAR_ORIGINS = ['https://polar.sh', 'https://sandbox.polar.sh']
 function openPolarCheckoutOverlay(checkoutUrl: string, theme: 'light' | 'dark' = 'dark') {
   const style = document.createElement('style')
   style.innerText = `
-    .polar-loader-spinner {
-      width: 20px; aspect-ratio: 1; border-radius: 50%;
-      background: ${theme === 'dark' ? '#000' : '#fff'};
-      box-shadow: 0 0 0 0 ${theme === 'dark' ? '#fff' : '#000'};
-      animation: polar-loader-spinner-animation 1s infinite;
-    }
-    @keyframes polar-loader-spinner-animation { 100% { box-shadow: 0 0 0 30px #0000 } }
     body.polar-no-scroll { overflow: hidden; }
+    .polar-checkout-iframe {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .polar-checkout-iframe.polar-loaded {
+      opacity: 1;
+    }
   `
   document.head.appendChild(style)
 
-  const loader = document.createElement('div')
-  loader.style.position = 'absolute'
-  loader.style.top = '50%'
-  loader.style.left = '50%'
-  loader.style.transform = 'translate(-50%, -50%)'
-  loader.style.zIndex = '2147483647'
-  const spinner = document.createElement('div')
-  spinner.className = 'polar-loader-spinner'
-  loader.appendChild(spinner)
   document.body.classList.add('polar-no-scroll')
-  document.body.appendChild(loader)
 
   const u = new URL(checkoutUrl)
   u.searchParams.set('embed', 'true')
@@ -44,6 +34,7 @@ function openPolarCheckoutOverlay(checkoutUrl: string, theme: 'light' | 'dark' =
 
   const iframe = document.createElement('iframe')
   iframe.src = u.toString()
+  iframe.className = 'polar-checkout-iframe'
   Object.assign(iframe.style, {
     position: 'fixed',
     top: '0',
@@ -57,13 +48,10 @@ function openPolarCheckoutOverlay(checkoutUrl: string, theme: 'light' | 'dark' =
   const allowOrigins = POLAR_ORIGINS.join(' ')
   iframe.allow = `payment 'self' ${allowOrigins}; publickey-credentials-get 'self' ${allowOrigins};`
 
-  let loaded = false
-
   function cleanup() {
     window.removeEventListener('message', onMessage)
     document.body.classList.remove('polar-no-scroll')
     if (document.body.contains(iframe)) document.body.removeChild(iframe)
-    if (document.body.contains(loader)) document.body.removeChild(loader)
     if (document.head.contains(style)) document.head.removeChild(style)
   }
 
@@ -73,10 +61,7 @@ function openPolarCheckoutOverlay(checkoutUrl: string, theme: 'light' | 'dark' =
     if (!data || data.type !== 'POLAR_CHECKOUT') return
     switch (data.event) {
       case 'loaded':
-        if (!loaded) {
-          loaded = true
-          if (document.body.contains(loader)) document.body.removeChild(loader)
-        }
+        iframe.classList.add('polar-loaded')
         break
       case 'close':
         cleanup()
