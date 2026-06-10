@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useSite, Site } from '../components/SiteContext'
 
-const PLAN_LIMITS: Record<string, number> = { starter: 1, pro: 5, agency: Infinity }
-const PLAN_LABELS: Record<string, string> = { starter: 'Starter', pro: 'Pro', agency: 'Agency' }
-const PLAN_PRICES: Record<string, string> = { starter: '$19/mo', pro: '$49/mo', agency: '$99/mo' }
+const PLAN_LIMITS: Record<string, number> = { basic: 1, pro: 5, max: Infinity }
+const PLAN_LABELS: Record<string, string> = { basic: 'Basic', pro: 'Pro', max: 'Max' }
+const PLAN_PRICES: Record<string, string> = { basic: 'Free', pro: '$19/mo', max: '$49/mo' }
 
 function daysLeft(iso: string) {
   const diff = new Date(iso).getTime() - Date.now()
@@ -22,7 +22,7 @@ export default function SettingsPage() {
   const router = useRouter()
   const { sites, selectedSite, setSelectedSiteId, refreshSites, updateSiteName } = useSite()
   const [email, setEmail] = useState<string | null>(null)
-  const [plan, setPlan] = useState<string>('starter')
+  const [plan, setPlan] = useState<string>('basic')
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
   const [hasSubscription, setHasSubscription] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -57,7 +57,7 @@ export default function SettingsPage() {
           .single()
           .then(({ data }) => {
             if (data) {
-              setPlan(data.plan ?? 'starter')
+              setPlan(data.plan ?? 'basic')
               setTrialEndsAt(data.trial_ends_at ?? null)
               setHasSubscription(!!data.polar_subscription_id)
             }

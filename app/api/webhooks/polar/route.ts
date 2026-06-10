@@ -71,7 +71,7 @@ export const POST = Webhooks({
       .eq('user_id', userId)
   },
 
-  // Subscription period has ended without renewal — downgrade to starter
+  // Subscription period has ended without renewal — downgrade to basic
   onSubscriptionRevoked: async (payload) => {
     const { customer } = payload.data
     const userId = customer.externalId
@@ -81,7 +81,7 @@ export const POST = Webhooks({
     await supabaseAdmin
       .from('clients')
       .update({
-        plan: 'starter',
+        plan: 'basic',
         subscription_status: 'revoked',
         polar_subscription_id: null,
       })
