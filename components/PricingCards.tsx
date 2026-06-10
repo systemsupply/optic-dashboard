@@ -234,8 +234,7 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
                 style={{
                   padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500,
                   border: 'none', background: '#F1F1F1', color: '#131313',
-                  textAlign: 'center', cursor: loadingPlan === plan.key ? 'wait' : 'pointer',
-                  opacity: loadingPlan === plan.key ? 0.7 : 1,
+                  textAlign: 'center', cursor: 'pointer',
                 }}
               >
                 {loadingPlan === plan.key ? 'Loading…' : 'Upgrade'}
