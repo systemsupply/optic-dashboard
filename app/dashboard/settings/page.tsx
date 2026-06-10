@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useSite, Site } from '../components/SiteContext'
-
-const PLAN_LIMITS: Record<string, number> = { basic: 1, pro: 5, max: Infinity }
-const PLAN_LABELS: Record<string, string> = { basic: 'Basic', pro: 'Pro', max: 'Max' }
-const PLAN_PRICES: Record<string, string> = { basic: 'Free', pro: '$19/mo', max: '$49/mo' }
+import { normalizePlan, Plan, PLAN_LIMITS, PLAN_LABELS, PLAN_PRICES } from '@/lib/plan'
 
 function daysLeft(iso: string) {
   const diff = new Date(iso).getTime() - Date.now()
@@ -22,7 +19,7 @@ export default function SettingsPage() {
   const router = useRouter()
   const { sites, selectedSite, setSelectedSiteId, refreshSites, updateSiteName } = useSite()
   const [email, setEmail] = useState<string | null>(null)
-  const [plan, setPlan] = useState<string>('basic')
+  const [plan, setPlan] = useState<Plan>('basic')
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
   const [hasSubscription, setHasSubscription] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -57,7 +54,7 @@ export default function SettingsPage() {
           .single()
           .then(({ data }) => {
             if (data) {
-              setPlan(data.plan ?? 'basic')
+              setPlan(normalizePlan(data.plan))
               setTrialEndsAt(data.trial_ends_at ?? null)
               setHasSubscription(!!data.polar_subscription_id)
             }

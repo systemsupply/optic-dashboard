@@ -4,9 +4,10 @@ import { useEffect, useState, ReactNode } from 'react'
 import Sidebar from '@/components/Sidebar'
 import PricingCards from '@/components/PricingCards'
 import { supabase } from '@/lib/supabase'
+import { normalizePlan, Plan } from '@/lib/plan'
 
 export default function PlanGate({ children }: { children: ReactNode }) {
-  const [plan, setPlan] = useState<string | null>(null)
+  const [plan, setPlan] = useState<Plan | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export default function PlanGate({ children }: { children: ReactNode }) {
         .eq('user_id', user.id)
         .single()
         .then(({ data }) => {
-          setPlan(data?.plan ?? 'basic')
+          setPlan(normalizePlan(data?.plan))
           setLoading(false)
         })
     })

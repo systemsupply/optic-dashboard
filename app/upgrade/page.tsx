@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import PricingCards from '@/components/PricingCards'
+import { normalizePlan, Plan } from '@/lib/plan'
 
 export default function UpgradePage() {
   const router = useRouter()
-  const [plan, setPlan] = useState<string | undefined>(undefined)
+  const [plan, setPlan] = useState<Plan | undefined>(undefined)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function UpgradePage() {
         .eq('user_id', user.id)
         .single()
         .then(({ data }) => {
-          setPlan(data?.plan ?? 'basic')
+          setPlan(normalizePlan(data?.plan))
           setLoading(false)
         })
     })
