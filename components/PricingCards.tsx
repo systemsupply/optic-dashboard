@@ -3,56 +3,95 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
-type PolarEmbed = {
-  create: (url: string, options: { theme?: string }) => Promise<unknown>
-}
+const POLAR_ORIGINS = ['https://polar.sh', 'https://sandbox.polar.sh']
 
-declare global {
-  interface Window {
-    PolarEmbedCheckout?: PolarEmbed & { PolarEmbedCheckout?: PolarEmbed }
-  }
-}
-
-const POLAR_EMBED_SRC = 'https://cdn.jsdelivr.net/npm/@polar-sh/checkout@0.3.0/dist/embed.global.js'
-
-// The jsdelivr global build can expose the helper either directly on
-// window.PolarEmbedCheckout, or nested as window.PolarEmbedCheckout.PolarEmbedCheckout
-// depending on how the UMD bundle wraps the module exports. Check both.
-function getPolarEmbed(): PolarEmbed | null {
-  const w = window.PolarEmbedCheckout
-  if (!w) return null
-  if (typeof w.create === 'function') return w
-  if (w.PolarEmbedCheckout && typeof w.PolarEmbedCheckout.create === 'function') return w.PolarEmbedCheckout
-  return null
-}
-
-// Ensures the Polar embed script is loaded before we try to use it, instead
-// of relying on Next's <Script> timing (which may not have run yet by the
-// time the user clicks Upgrade).
-function loadPolarEmbed(): Promise<PolarEmbed | null> {
-  return new Promise(resolve => {
-    const existing = getPolarEmbed()
-    if (existing) {
-      resolve(existing)
-      return
+// Self-contained re-implementation of @polar-sh/checkout's embedded overlay.
+// We avoid loading it from a CDN (cdn.jsdelivr.net is blocked on some
+// networks, which silently broke the overlay and fell back to a full
+// redirect). This opens the Polar checkout in a fixed-position iframe
+// overlay and listens for postMessage events to know when it's loaded,
+// closed, or completed.
+function openPolarCheckoutOverlay(checkoutUrl: string, theme: 'light' | 'dark' = 'dark') {
+  const style = document.createElement('style')
+  style.innerText = `
+    .polar-loader-spinner {
+      width: 20px; aspect-ratio: 1; border-radius: 50%;
+      background: ${theme === 'dark' ? '#000' : '#fff'};
+      box-shadow: 0 0 0 0 ${theme === 'dark' ? '#fff' : '#000'};
+      animation: polar-loader-spinner-animation 1s infinite;
     }
+    @keyframes polar-loader-spinner-animation { 100% { box-shadow: 0 0 0 30px #0000 } }
+    body.polar-no-scroll { overflow: hidden; }
+  `
+  document.head.appendChild(style)
 
-    const existingScript = document.querySelector(`script[src="${POLAR_EMBED_SRC}"]`) as HTMLScriptElement | null
-    const script = existingScript ?? document.createElement('script')
-    if (!existingScript) {
-      script.src = POLAR_EMBED_SRC
-      document.head.appendChild(script)
-    }
+  const loader = document.createElement('div')
+  loader.style.position = 'absolute'
+  loader.style.top = '50%'
+  loader.style.left = '50%'
+  loader.style.transform = 'translate(-50%, -50%)'
+  loader.style.zIndex = '2147483647'
+  const spinner = document.createElement('div')
+  spinner.className = 'polar-loader-spinner'
+  loader.appendChild(spinner)
+  document.body.classList.add('polar-no-scroll')
+  document.body.appendChild(loader)
 
-    script.addEventListener('load', () => resolve(getPolarEmbed()))
-    script.addEventListener('error', () => resolve(null))
+  const u = new URL(checkoutUrl)
+  u.searchParams.set('embed', 'true')
+  u.searchParams.set('embed_origin', window.location.origin)
+  u.searchParams.set('theme', theme)
 
-    // In case the script already finished loading between our checks
-    if (existingScript) {
-      const found = getPolarEmbed()
-      if (found) resolve(found)
-    }
+  const iframe = document.createElement('iframe')
+  iframe.src = u.toString()
+  Object.assign(iframe.style, {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    border: 'none',
+    zIndex: '2147483647',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   })
+  const allowOrigins = POLAR_ORIGINS.join(' ')
+  iframe.allow = `payment 'self' ${allowOrigins}; publickey-credentials-get 'self' ${allowOrigins};`
+
+  let loaded = false
+
+  function cleanup() {
+    window.removeEventListener('message', onMessage)
+    document.body.classList.remove('polar-no-scroll')
+    if (document.body.contains(iframe)) document.body.removeChild(iframe)
+    if (document.body.contains(loader)) document.body.removeChild(loader)
+    if (document.head.contains(style)) document.head.removeChild(style)
+  }
+
+  function onMessage(event: MessageEvent) {
+    if (!POLAR_ORIGINS.includes(event.origin)) return
+    const data = event.data
+    if (!data || data.type !== 'POLAR_CHECKOUT') return
+    switch (data.event) {
+      case 'loaded':
+        if (!loaded) {
+          loaded = true
+          if (document.body.contains(loader)) document.body.removeChild(loader)
+        }
+        break
+      case 'close':
+        cleanup()
+        break
+      case 'success':
+        cleanup()
+        if (data.redirect && data.successURL) {
+          window.location.href = data.successURL
+        }
+        break
+    }
+  }
+
+  window.addEventListener('message', onMessage)
+  document.body.appendChild(iframe)
 }
 
 const PRODUCT_IDS: Record<string, string> = {
@@ -127,13 +166,8 @@ export default function PricingCards({ currentPlan }: { currentPlan?: string }) 
       if (!res.ok) throw new Error('Failed to create checkout')
       const { url } = await res.json()
 
-      const embed = await loadPolarEmbed()
-      if (embed && url) {
-        await embed.create(url, { theme: 'dark' })
-      } else if (url) {
-        console.warn('PolarEmbedCheckout not available, falling back to redirect', window.PolarEmbedCheckout)
-        window.location.href = url
-      }
+      if (!url) throw new Error('No checkout url returned')
+      openPolarCheckoutOverlay(url, 'dark')
     } catch (err) {
       console.error('Checkout error:', err)
       alert('Could not start checkout. Please try again.')
